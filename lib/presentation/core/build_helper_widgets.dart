@@ -1,7 +1,9 @@
 import 'package:dynamic_tooltip_plotline/presentation/core/my_textbox_template.dart';
 import 'package:dynamic_tooltip_plotline/presentation/core/style_elements.dart';
+import 'package:provider/provider.dart';
 
 import 'helper.dart';
+import 'my_colored_textbox.dart';
 import 'my_dropdown.dart';
 
 import 'column_child.dart';
@@ -20,7 +22,10 @@ Widget buildTargetElement(String id, double w) {
 Widget buildTooltipText(String id, double w) {
   return ColumnChild(
     headline: id,
-    widget: MyTextboxTemplate(type: KeyboardType.alphabet),
+    widget: MyTextboxTemplate(
+      type: KeyboardType.alphabet,
+      id: id,
+    ),
     width: w,
   );
 }
@@ -33,7 +38,8 @@ Widget buildTextSizeAndPadding(String id1, String id2, double w) {
         child: ColumnChild(
           headline: id1,
           widget: MyTextboxTemplate(
-            type: KeyboardType.alphabet,
+            type: KeyboardType.numeral,
+            id: id1,
           ),
           width: w,
         ),
@@ -44,7 +50,8 @@ Widget buildTextSizeAndPadding(String id1, String id2, double w) {
         child: ColumnChild(
           headline: id2,
           widget: MyTextboxTemplate(
-            type: KeyboardType.alphabet,
+            type: KeyboardType.numeral,
+            id: id2,
           ),
           width: w,
         ),
@@ -53,10 +60,10 @@ Widget buildTextSizeAndPadding(String id1, String id2, double w) {
   );
 }
 
-Widget buildRenderTooltipButton(String id) {
+Widget buildRenderTooltipButton(String id, void Function()? onPressed) {
   return Center(
     child: ElevatedButton(
-      onPressed: () {},
+      onPressed: onPressed,
       child: Text(
         id,
         style: bodyMedium.copyWith(color: Colors.white),
@@ -71,7 +78,17 @@ Widget buildRenderTooltipButton(String id) {
   );
 }
 
-Widget getWidgetFromOrderId(String orderId, double w) {
+Widget buildColorPicker(String id, double w) {
+  return ColumnChild(
+      headline: id,
+      width: w,
+      widget: MyColoredTextbox(
+        id: id,
+      ));
+}
+
+Widget getWidgetFromOrderId(String orderId, double w,
+    {void Function()? onPressed}) {
   switch (orderId) {
     case orderIdTargetElement:
       return buildTargetElement(orderIdTargetElement, w);
@@ -83,9 +100,9 @@ Widget getWidgetFromOrderId(String orderId, double w) {
       String id2 = sub[1];
       return buildTextSizeAndPadding(id1, id2, w);
     case orderIdTextColor:
-      return buildTargetElement(orderIdTextColor, w);
+      return buildColorPicker(orderIdTextColor, w);
     case orderIdBgColor:
-      return buildTargetElement(orderIdBgColor, w);
+      return buildColorPicker(orderIdBgColor, w);
     case orderIdCornerRadTooltipWidth:
       List<String> sub = Helper.getSubstrings(orderIdCornerRadTooltipWidth);
       String id1 = sub[0];
@@ -97,8 +114,33 @@ Widget getWidgetFromOrderId(String orderId, double w) {
       String id2 = sub[1];
       return buildTextSizeAndPadding(id1, id2, w);
     case orderIdRenderTooltip:
-      return buildRenderTooltipButton(orderIdRenderTooltip);
+      return buildRenderTooltipButton(orderIdRenderTooltip, onPressed);
     default:
       return Container(height: 0);
   }
+}
+
+SnackBar buildMySnackBar(String t) {
+  return SnackBar(
+    backgroundColor: Colors.red,
+    content: Text(
+      t,
+      style: bodyMedium.copyWith(color: Colors.white),
+    ),
+  );
+}
+
+Widget buildTooltipButton() {
+  return ElevatedButton(
+    onPressed: () {},
+    child: Text(
+      'Button x',
+      style: bodyMedium,
+    ),
+    style: ElevatedButton.styleFrom(
+      backgroundColor: Colors.white,
+      shape: RoundedRectangleBorder(
+          borderRadius: myRad, side: myBorder.borderSide),
+    ),
+  );
 }

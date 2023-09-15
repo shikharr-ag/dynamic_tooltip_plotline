@@ -1,21 +1,54 @@
+import 'dart:developer';
+
+import 'package:dynamic_tooltip_plotline/presentation/core/constants.dart';
 import 'package:flutter/material.dart';
 
-class ControllerProvider extends ChangeNotifier {
-  /// Internal, private state of the cart.
-  // final List<Item> _items = [];
-  final Map<String, String> _styleFactors = {};
+import '../../domain/core/failures.dart';
 
-  /// An unmodifiable view of the items in the cart.
-  // UnmodifiableListView<Item> get items => UnmodifiableListView(_items);
-  Map<String, String> get styleFactors => _styleFactors;
+// import '../../domain/tooltip/tooltip_params.dart';
 
-  /// Adds [item] to cart. This and [removeAll] are the only ways to modify the
-  /// cart from the outside.
-  void add(String key, String val) {
+class DataProvider extends ChangeNotifier {
+  final Map<String, Object> _styleFactors = {};
+  ValueFailure _failure = ValueFailure.none();
+  // final ToolTipParams _params = ToolTipParams.fromJson({});
+  bool _isFormComplete = false;
+  Map<String, Object> get styleFactors => _styleFactors;
+  ValueFailure get failure => _failure;
+  bool get isFormComplete => _isFormComplete;
+
+  void add(String key, Object val) {
+    log('Adding for $key the value $val');
     _styleFactors.update(key, (key) => val, ifAbsent: () => val);
-    // This call tells the widgets that are listening to this model to rebuild.
+    log('Updated Factors: $_styleFactors');
+    _setNoErrorState();
     notifyListeners();
   }
+
+  void updateValueFailure(ValueFailure f) {
+    log('Caught Value Failure: $f');
+    _failure = f;
+    notifyListeners();
+  }
+
+  ///Reinitialise Error State
+  void _setNoErrorState() {
+    _failure = ValueFailure.none();
+  }
+
+  bool checkIfValueAbsent(String id) {
+    log('ID Recv: $id');
+    _isFormComplete = true;
+    bool state = _styleFactors.containsKey(tooltipParamsMap[id]);
+
+    if (!state) {
+      _isFormComplete = false;
+    }
+    return state;
+  }
+
+  // void setParams(ToolTipParams params) {
+  //   _params = params;
+  // }
 
   // /// Removes all items from the cart.
   // void removeAll() {
