@@ -1,12 +1,29 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import 'package:dynamic_tooltip_plotline/application/tooltip/data_provider.dart';
+import 'package:dynamic_tooltip_plotline/infrastructure/tooltip/logo_api_repository.dart';
+
 import 'style_elements.dart';
 
 class MyDropdown extends StatefulWidget {
-  final List<DropdownMenuEntry<String>>? list;
-
-  const MyDropdown({super.key, this.list});
+  final List<String>? items;
+  final bool updateTargetElementState;
+  final bool updateBackgroundStyleState;
+  final bool updateBackgroundStyleSourceState;
+  final void Function(String x)? updateLogoUrl;
+  final void Function(String x)? updateSource;
+  const MyDropdown({
+    Key? key,
+    this.items,
+    this.updateTargetElementState = false,
+    this.updateBackgroundStyleState = false,
+    this.updateBackgroundStyleSourceState = false,
+    this.updateLogoUrl,
+    this.updateSource,
+  }) : super(key: key);
 
   @override
   State<MyDropdown> createState() => _MyDropdownState();
@@ -16,16 +33,55 @@ class _MyDropdownState extends State<MyDropdown> {
   String _selectedVal = '';
   late final List<PopupMenuItem<String>> _items;
 
+  void updateState(DataProvider prov) {
+    if (widget.updateBackgroundStyleState) {
+      prov.setBackgroundStyleDomainSet(_selectedVal);
+    } else if (widget.updateTargetElementState) {
+      prov.setTargetElementState(_selectedVal);
+    } else if (widget.updateBackgroundStyleSourceState) {
+      prov.setBackgroundStyleSourceState(_selectedVal);
+    }
+  }
+
+  String getAppropriateVal() {
+    return _selectedVal.isEmpty
+        ? (widget.updateBackgroundStyleState
+            ? 'Choose a company'
+            : widget.updateTargetElementState
+                ? 'Choose a target element'
+                : widget.updateBackgroundStyleSourceState
+                    ? 'Choose image src'
+                    : '')
+        : _selectedVal;
+  }
+
   void initialisePopMenuItems() {
+    DataProvider prov = Provider.of<DataProvider>(context, listen: false);
     _items = List.generate(
-      5,
+      widget.items == null ? 5 : widget.items!.length,
       (index) => PopupMenuItem(
-        child: Text('Button ${index + 1}'),
+        child: Text(widget.items == null
+            ? 'Button ${index + 1}'
+            : widget.items![index]),
         onTap: () {
           log('Tapped index :$index');
-          setState(() {
-            _selectedVal = 'Button ${index + 1}';
-          });
+          _selectedVal = widget.items == null
+              ? 'Button ${index + 1}'
+              : widget.items![index];
+          updateState(prov);
+
+          ///Generates Logo Url from Repo
+          ///_selectedVal here is the company name
+          if (widget.updateBackgroundStyleState) {
+            if (widget.updateLogoUrl != null) {
+              widget.updateLogoUrl!(LogoAPIRepository().getUri(_selectedVal));
+            }
+          }
+          if (widget.updateBackgroundStyleSourceState) {
+            if (widget.updateSource != null) {
+              widget.updateSource!(_selectedVal);
+            }
+          }
         },
       ),
     );
@@ -48,18 +104,32 @@ class _MyDropdownState extends State<MyDropdown> {
         borderRadius: BorderRadius.circular(6.0),
       ),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           const SizedBox(
             width: 10,
           ),
-          Text(
-            _selectedVal,
-            style: bodyMedium,
-          ),
-          Spacer(),
-          PopupMenuButton(
-              icon: Image.asset('assets/vectors/Vector.png'),
-              itemBuilder: (context) => _items)
+          Consumer<DataProvider>(builder: (context, prov, _) {
+            _selectedVal = widget.updateBackgroundStyleState
+                ? prov.backgroundStyleDomainState
+                : (widget.updateTargetElementState
+                    ? prov.targetElementState
+                    : widget.updateBackgroundStyleSourceState
+                        ? prov.backgroundStyleSourceState
+                        : '');
+            return Text(
+              getAppropriateVal(),
+              style: _selectedVal.isEmpty ? bodySmall : bodyMedium,
+            );
+          }),
+          Expanded(
+            child: Align(
+              alignment: Alignment.centerRight,
+              child: PopupMenuButton(
+                  icon: Image.asset('assets/vectors/Vector.png'),
+                  itemBuilder: (context) => _items),
+            ),
+          )
         ],
       ),
     );

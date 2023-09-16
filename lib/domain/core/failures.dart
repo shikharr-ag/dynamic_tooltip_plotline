@@ -16,9 +16,7 @@ abstract class ValueFailure<T> with _$ValueFailure<T> {
   const factory ValueFailure.negativeDouble({
     @required required T failedValue,
   }) = NegativeDouble<T>;
-  const factory ValueFailure.invalidColor(
-    
-  ) = InvalidColor;
+  const factory ValueFailure.invalidColor() = InvalidColor;
   // const factory ValueFailure.numberTooLarge({
   //   @required T failedValue,
   //   @required num max,

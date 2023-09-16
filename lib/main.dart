@@ -1,8 +1,9 @@
+import 'package:dynamic_tooltip_plotline/domain/tooltip/my_double.dart';
 import 'package:dynamic_tooltip_plotline/presentation/pages/preview_tooltip_page.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
-import 'application/tooltip/controller_provider.dart';
+import 'application/tooltip/data_provider.dart';
 import 'presentation/core/style_elements.dart';
 import 'presentation/pages/design_tooltip_page.dart';
 import 'package:flutter/material.dart';
@@ -27,16 +28,22 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
           title: 'Dynamytip',
           theme: ThemeData(
-            textTheme: const TextTheme(
+            textTheme: TextTheme(
               headlineMedium: headlineMedium,
               bodySmall: bodySmall,
+              bodyMedium: bodyMedium,
+              labelLarge: bodySmall.copyWith(color: Colors.black),
             ),
-            canvasColor: backgroundColor,
-            colorScheme: ColorScheme.fromSeed(seedColor: Colors.white70),
+            inputDecorationTheme: InputDecorationTheme(
+              contentPadding: const EdgeInsets.symmetric(horizontal: 10.0),
+              border: myBorder,
+              enabledBorder: myBorder,
+              errorBorder: myBorder,
+            ),
             useMaterial3: true,
           ),
           debugShowCheckedModeBanner: false,
-          home: const PreviewTooltipPage()),
+          home: const DesignTooltipPage()),
     );
   }
 }

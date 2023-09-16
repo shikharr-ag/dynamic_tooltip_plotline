@@ -27,7 +27,7 @@ mixin _$ToolTipParams {
   double get padding => throw _privateConstructorUsedError;
   double get textSize => throw _privateConstructorUsedError;
   int get textColorCode => throw _privateConstructorUsedError;
-  int get bgColorCode => throw _privateConstructorUsedError;
+  String get bgSrc => throw _privateConstructorUsedError;
   String get tooltipText => throw _privateConstructorUsedError;
   String get targetElement => throw _privateConstructorUsedError;
 
@@ -51,7 +51,7 @@ abstract class $ToolTipParamsCopyWith<$Res> {
       double padding,
       double textSize,
       int textColorCode,
-      int bgColorCode,
+      String bgSrc,
       String tooltipText,
       String targetElement});
 }
@@ -76,7 +76,7 @@ class _$ToolTipParamsCopyWithImpl<$Res, $Val extends ToolTipParams>
     Object? padding = null,
     Object? textSize = null,
     Object? textColorCode = null,
-    Object? bgColorCode = null,
+    Object? bgSrc = null,
     Object? tooltipText = null,
     Object? targetElement = null,
   }) {
@@ -109,10 +109,10 @@ class _$ToolTipParamsCopyWithImpl<$Res, $Val extends ToolTipParams>
           ? _value.textColorCode
           : textColorCode // ignore: cast_nullable_to_non_nullable
               as int,
-      bgColorCode: null == bgColorCode
-          ? _value.bgColorCode
-          : bgColorCode // ignore: cast_nullable_to_non_nullable
-              as int,
+      bgSrc: null == bgSrc
+          ? _value.bgSrc
+          : bgSrc // ignore: cast_nullable_to_non_nullable
+              as String,
       tooltipText: null == tooltipText
           ? _value.tooltipText
           : tooltipText // ignore: cast_nullable_to_non_nullable
@@ -141,7 +141,7 @@ abstract class _$$_ToolTipParamsCopyWith<$Res>
       double padding,
       double textSize,
       int textColorCode,
-      int bgColorCode,
+      String bgSrc,
       String tooltipText,
       String targetElement});
 }
@@ -164,7 +164,7 @@ class __$$_ToolTipParamsCopyWithImpl<$Res>
     Object? padding = null,
     Object? textSize = null,
     Object? textColorCode = null,
-    Object? bgColorCode = null,
+    Object? bgSrc = null,
     Object? tooltipText = null,
     Object? targetElement = null,
   }) {
@@ -197,10 +197,10 @@ class __$$_ToolTipParamsCopyWithImpl<$Res>
           ? _value.textColorCode
           : textColorCode // ignore: cast_nullable_to_non_nullable
               as int,
-      bgColorCode: null == bgColorCode
-          ? _value.bgColorCode
-          : bgColorCode // ignore: cast_nullable_to_non_nullable
-              as int,
+      bgSrc: null == bgSrc
+          ? _value.bgSrc
+          : bgSrc // ignore: cast_nullable_to_non_nullable
+              as String,
       tooltipText: null == tooltipText
           ? _value.tooltipText
           : tooltipText // ignore: cast_nullable_to_non_nullable
@@ -224,7 +224,7 @@ class _$_ToolTipParams with DiagnosticableTreeMixin implements _ToolTipParams {
       required this.padding,
       required this.textSize,
       required this.textColorCode,
-      required this.bgColorCode,
+      required this.bgSrc,
       required this.tooltipText,
       required this.targetElement});
 
@@ -246,7 +246,7 @@ class _$_ToolTipParams with DiagnosticableTreeMixin implements _ToolTipParams {
   @override
   final int textColorCode;
   @override
-  final int bgColorCode;
+  final String bgSrc;
   @override
   final String tooltipText;
   @override
@@ -254,7 +254,7 @@ class _$_ToolTipParams with DiagnosticableTreeMixin implements _ToolTipParams {
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'ToolTipParams(arrowWidth: $arrowWidth, arrowHeight: $arrowHeight, cornerRadius: $cornerRadius, tooltipWidth: $tooltipWidth, padding: $padding, textSize: $textSize, textColorCode: $textColorCode, bgColorCode: $bgColorCode, tooltipText: $tooltipText, targetElement: $targetElement)';
+    return 'ToolTipParams(arrowWidth: $arrowWidth, arrowHeight: $arrowHeight, cornerRadius: $cornerRadius, tooltipWidth: $tooltipWidth, padding: $padding, textSize: $textSize, textColorCode: $textColorCode, bgSrc: $bgSrc, tooltipText: $tooltipText, targetElement: $targetElement)';
   }
 
   @override
@@ -269,7 +269,7 @@ class _$_ToolTipParams with DiagnosticableTreeMixin implements _ToolTipParams {
       ..add(DiagnosticsProperty('padding', padding))
       ..add(DiagnosticsProperty('textSize', textSize))
       ..add(DiagnosticsProperty('textColorCode', textColorCode))
-      ..add(DiagnosticsProperty('bgColorCode', bgColorCode))
+      ..add(DiagnosticsProperty('bgSrc', bgSrc))
       ..add(DiagnosticsProperty('tooltipText', tooltipText))
       ..add(DiagnosticsProperty('targetElement', targetElement));
   }
@@ -292,8 +292,7 @@ class _$_ToolTipParams with DiagnosticableTreeMixin implements _ToolTipParams {
                 other.textSize == textSize) &&
             (identical(other.textColorCode, textColorCode) ||
                 other.textColorCode == textColorCode) &&
-            (identical(other.bgColorCode, bgColorCode) ||
-                other.bgColorCode == bgColorCode) &&
+            (identical(other.bgSrc, bgSrc) || other.bgSrc == bgSrc) &&
             (identical(other.tooltipText, tooltipText) ||
                 other.tooltipText == tooltipText) &&
             (identical(other.targetElement, targetElement) ||
@@ -311,7 +310,7 @@ class _$_ToolTipParams with DiagnosticableTreeMixin implements _ToolTipParams {
       padding,
       textSize,
       textColorCode,
-      bgColorCode,
+      bgSrc,
       tooltipText,
       targetElement);
 
@@ -338,7 +337,7 @@ abstract class _ToolTipParams implements ToolTipParams {
       required final double padding,
       required final double textSize,
       required final int textColorCode,
-      required final int bgColorCode,
+      required final String bgSrc,
       required final String tooltipText,
       required final String targetElement}) = _$_ToolTipParams;
 
@@ -360,7 +359,7 @@ abstract class _ToolTipParams implements ToolTipParams {
   @override
   int get textColorCode;
   @override
-  int get bgColorCode;
+  String get bgSrc;
   @override
   String get tooltipText;
   @override

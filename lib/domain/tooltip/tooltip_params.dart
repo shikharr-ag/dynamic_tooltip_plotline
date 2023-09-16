@@ -5,6 +5,20 @@ part 'tooltip_params.freezed.dart';
 
 part 'tooltip_params.g.dart';
 
+//Tooltip Json Keys
+/// UPDATE THESE ACCORDING TO THE NAME OF THE VARIABLES
+/// IF ANY CHANGES ARE MADE
+const String arrowWidthJsonKey = 'arrowWidth';
+const String arrowHeightJsonKey = 'arrowHeight';
+const String cornerRadiusJsonKey = 'cornerRadius';
+const String tooltipWidthJsonKey = 'tooltipWidth';
+const String paddingJsonKey = 'padding';
+const String textSizeJsonKey = 'textSize';
+const String textColorCodeJsonKey = 'textColorCode';
+const String bgSrcJsonKey = 'bgSrc';
+const String tooltipTextJsonKey = 'tooltipText';
+const String targetElementJsonKey = 'targetElement';
+
 @freezed
 class ToolTipParams with _$ToolTipParams {
   const factory ToolTipParams({
@@ -15,7 +29,7 @@ class ToolTipParams with _$ToolTipParams {
     required double padding,
     required double textSize,
     required int textColorCode,
-    required int bgColorCode,
+    required String bgSrc,
     required String tooltipText,
     required String targetElement,
   }) = _ToolTipParams;
@@ -42,7 +56,7 @@ class ToolTipParams with _$ToolTipParams {
           padding: 0,
           textSize: 0,
           textColorCode: 0x0,
-          bgColorCode: 0x0,
+          bgSrc: '',
           tooltipText: '',
           targetElement: '',
         )

@@ -43,6 +43,9 @@ dependencies:
   json_annotation: ^4.8.1
   super_tooltip: ^2.0.5
   intro_screen_onboarding_flutter: ^1.0.0
+  image_picker: ^1.0.4
+  http: ^1.1.0
+  shared_preferences: ^2.2.1
 
 dev_dependencies:
   flutter_test:
@@ -72,7 +75,7 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/vectors/
-  #   - images/a_dot_ham.jpeg
+    - assets/gifs/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

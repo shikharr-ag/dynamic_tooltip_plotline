@@ -1,10 +1,12 @@
 import 'dart:developer';
 
-import 'package:dynamic_tooltip_plotline/application/tooltip/controller_provider.dart';
+import 'package:dynamic_tooltip_plotline/application/tooltip/data_provider.dart';
 import 'package:dynamic_tooltip_plotline/domain/tooltip/my_color.dart';
+import 'package:dynamic_tooltip_plotline/presentation/core/build_helper_widgets.dart';
 import 'package:dynamic_tooltip_plotline/presentation/core/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 import 'style_elements.dart';
@@ -27,23 +29,52 @@ class _MyColoredTextboxState extends State<MyColoredTextbox> {
         (r) => prov.add(tooltipParamsMap[widget.id]!, r));
   }
 
+  Future<Color?> getColor() async {
+    return await showDialog(
+        context: context,
+        builder: (context) {
+          return buildColorPicketDialog();
+        });
+  }
+
+  Widget buildColorPicketDialog() {
+    Color? color;
+    return AlertDialog(
+      backgroundColor: backgroundColor,
+      title: const Text(
+        'Choose Text Color',
+        style: headlineMedium,
+      ),
+      content: Column(
+        children: [
+          Expanded(
+            child: buildMyColorPicker(_defaultColor, (p0) {
+              color = p0;
+            }),
+          ),
+          buildTextButton(doneIcon, 'Select Color', () {})
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
       constraints: const BoxConstraints.expand(),
       // color: Colors.white,
-      decoration: BoxDecoration(
-          border: Border.fromBorderSide(myBorder.borderSide),
-          borderRadius: BorderRadius.circular(6.0)),
+      decoration: defaultContainerDecoration,
       child: Row(
         children: [
           Expanded(
             child: Container(
               constraints: const BoxConstraints.expand(),
+              padding: const EdgeInsets.only(left: 10.0),
               decoration: BoxDecoration(
                 color: _defaultColor,
                 borderRadius: BorderRadius.circular(6.0),
               ),
+              alignment: Alignment.centerLeft,
               child: showText
                   ? const Text(
                       'Input',
@@ -55,36 +86,8 @@ class _MyColoredTextboxState extends State<MyColoredTextbox> {
           IconButton(
             icon: Icon(Icons.edit),
             onPressed: () async {
-              Color? color = await showDialog(
-                  context: context,
-                  builder: (context) {
-                    Color? color;
-                    return AlertDialog(
-                      title: Text(
-                        'Choose Text Color',
-                        style: headlineMedium,
-                      ),
-                      content: Column(
-                        children: [
-                          ColorPicker(
-                            pickerColor: _defaultColor,
-                            onColorChanged: (c) {
-                              color = c;
-                            },
-                          ),
-                          TextButton(
-                            child: Text(
-                              'Select',
-                              style: bodyMedium,
-                            ),
-                            onPressed: () {
-                              Navigator.of(context).pop(color);
-                            },
-                          )
-                        ],
-                      ),
-                    );
-                  });
+              Color? color = await getColor();
+
               setState(() {
                 _defaultColor = color ?? Colors.white;
                 showText = false;
@@ -96,19 +99,5 @@ class _MyColoredTextboxState extends State<MyColoredTextbox> {
         ],
       ),
     );
-    // TextField(
-    //   decoration: InputDecoration(
-    //     fillColor: Colors.white,
-    //     filled: true,
-    //     hintText: 'Input',
-    //     hintStyle: Theme.of(context).textTheme.bodySmall,
-    //     border: myBorder,
-    //     enabledBorder: myBorder,
-
-    //   ),
-
-    //   readOnly: true,
-
-    // );
   }
 }

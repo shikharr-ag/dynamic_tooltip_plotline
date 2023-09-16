@@ -1,4 +1,6 @@
-import 'package:dynamic_tooltip_plotline/application/tooltip/controller_provider.dart';
+import 'dart:developer';
+
+import 'package:dynamic_tooltip_plotline/application/tooltip/data_provider.dart';
 import 'package:dynamic_tooltip_plotline/presentation/core/style_elements.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:provider/provider.dart';
@@ -59,7 +61,7 @@ class _DesignTooltipPageState extends State<DesignTooltipPage> {
       child: Scaffold(
           backgroundColor: theme.canvasColor,
           // resizeToAvoidBottomInset: false,
-          body: Container(
+          body: SizedBox(
             height: MediaQuery.of(context).size.height,
             width: MediaQuery.of(context).size.width,
             child: LayoutBuilder(builder: ((context, constraints) {
@@ -75,29 +77,47 @@ class _DesignTooltipPageState extends State<DesignTooltipPage> {
                   constraints.maxWidth * horizontalPaddingFactor;
               var listViewWidth =
                   constraints.maxWidth - 2 * leftAndRightPadding;
-
-              return Padding(
-                padding: EdgeInsets.fromLTRB(leftAndRightPadding, topPadding,
-                    leftAndRightPadding, bottomPadding),
-                child: Container(
-                  // color: Colors.red[100],
-                  constraints: BoxConstraints.tightFor(
-                      height: double.infinity, width: listViewWidth),
-                  child: Form(
-                    key: formKey,
-                    child: ListView(
-                      children: (widgetBuildOrder.map((e) {
-                        return ConstrainedBox(
-                            constraints: BoxConstraints.tightFor(
-                                width: listViewWidth,
-                                height: listViewWidgetHeight / 8.5),
-                            child: getWidgetFromOrderId(e, listViewWidth,
-                                onPressed: () =>
-                                    onPressedHandler(context, formKey)));
-                      }).toList()),
+              log('Bottom padding: $bottomPadding');
+              return Stack(
+                children: [
+                  Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Container(
+                      height: listViewWidgetHeight / 18,
+                      width: listViewWidth * 0.4,
+                      alignment: Alignment.centerRight,
+                      // color: Colors.yellow,
+                      child: Image.asset(
+                        'assets/gifs/arrow_nobg.gif',
+                        color: Colors.black,
+                        // scale: 2,
+                      ),
                     ),
                   ),
-                ),
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(leftAndRightPadding,
+                        topPadding, leftAndRightPadding, bottomPadding),
+                    child: Container(
+                      // color: Colors.red[100],
+                      constraints: BoxConstraints.tightFor(
+                          height: double.infinity, width: listViewWidth),
+                      child: Form(
+                        key: formKey,
+                        child: ListView(
+                          children: (widgetBuildOrder.map((e) {
+                            return ConstrainedBox(
+                                constraints: BoxConstraints.tightFor(
+                                    width: listViewWidth,
+                                    height: listViewWidgetHeight / 8.5),
+                                child: getWidgetFromOrderId(e, listViewWidth,
+                                    onPressed: () =>
+                                        onPressedHandler(context, formKey)));
+                          }).toList()),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               );
             })),
           )),

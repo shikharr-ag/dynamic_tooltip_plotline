@@ -15,7 +15,7 @@ _$_ToolTipParams _$$_ToolTipParamsFromJson(Map<String, dynamic> json) =>
       padding: (json['padding'] as num).toDouble(),
       textSize: (json['textSize'] as num).toDouble(),
       textColorCode: json['textColorCode'] as int,
-      bgColorCode: json['bgColorCode'] as int,
+      bgSrc: json['bgSrc'] as String,
       tooltipText: json['tooltipText'] as String,
       targetElement: json['targetElement'] as String,
     );
@@ -29,7 +29,7 @@ Map<String, dynamic> _$$_ToolTipParamsToJson(_$_ToolTipParams instance) =>
       'padding': instance.padding,
       'textSize': instance.textSize,
       'textColorCode': instance.textColorCode,
-      'bgColorCode': instance.bgColorCode,
+      'bgSrc': instance.bgSrc,
       'tooltipText': instance.tooltipText,
       'targetElement': instance.targetElement,
     };

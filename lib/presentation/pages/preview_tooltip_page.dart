@@ -143,7 +143,31 @@ class _PreviewTooltipPageState extends State<PreviewTooltipPage> {
                         width: totalWidgetWidth, height: totalWidgetHeight / 3),
                     child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [buildTooltipButton(), buildTooltipButton()]),
+                        children: [
+                          buildTooltipButton(),
+                          ColoredBox(
+                            color: Colors.red,
+                            child: Stack(
+                              children: [
+                                Align(
+                                    alignment: Alignment.center,
+                                    child: buildTooltipButton()),
+                                Align(
+                                  alignment: Alignment.topRight,
+                                  child: Container(
+                                    color: Colors.yellow,
+                                    alignment: Alignment.topCenter,
+                                    child: Image.asset(
+                                      'assets/gifs/arrow.gif',
+                                      color: Colors.red,
+                                      // scale: 2,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )
+                        ]),
                   ),
                 ],
               ),
