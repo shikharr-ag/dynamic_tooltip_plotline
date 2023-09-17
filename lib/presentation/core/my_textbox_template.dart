@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:dynamic_tooltip_plotline/presentation/core/helper.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -32,14 +33,57 @@ class MyTextboxTemplate extends StatefulWidget {
 }
 
 class _MyTextboxTemplateState extends State<MyTextboxTemplate> {
+  late final FocusNode f;
+  late final TextEditingController ctrl;
+  late final DataProvider prov;
+
   ///This variable indicates the presence of this key in the state
   ///If absent that means field is empty
   bool isEmpty = true;
+
+  void addKVToState() {
+    if (ctrl.text.isNotEmpty) {
+      prov.add(Helper.getJsonKeyFromHeadline(widget.id), ctrl.text,
+          castToDouble: widget.type == KeyboardType.numeral ? true : false);
+    }
+  }
+
+  void initialiseVariables() {
+    log('Params: ${prov.params}');
+
+    f = FocusNode(debugLabel: widget.id);
+    Object? j = prov.getValFromParams(widget.id);
+    ctrl = TextEditingController(text: j == null ? '' : j.toString());
+  }
+
+  @override
+  void initState() {
+    prov = Provider.of<DataProvider>(context, listen: false);
+    // log('building form field');
+    initialiseVariables();
+    f.addListener(() {
+      // log('Focus changed :${f.debugLabel} ${f.hasFocus}');
+      if (!f.hasFocus) {
+        addKVToState();
+      }
+    });
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    f.dispose();
+    ctrl.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer<DataProvider>(
       builder: (context, prov, _) {
         return TextFormField(
+          controller: ctrl,
+          focusNode: f,
           textAlign: TextAlign.start,
           scrollPadding: EdgeInsets.zero,
           maxLines: 1,
@@ -61,7 +105,7 @@ class _MyTextboxTemplateState extends State<MyTextboxTemplate> {
               ? TextInputType.name
               : TextInputType.number,
           validator: (x) {
-            log('validate');
+            // log('validate');
             isEmpty = prov.checkIfValueAbsent(widget.id);
 
             ///Rebuild UI to reflect state
@@ -75,11 +119,11 @@ class _MyTextboxTemplateState extends State<MyTextboxTemplate> {
                     MyDouble d = MyDouble(val);
 
                     d.value.fold((l) {
-                      log('Error :$l');
+                      // log('Error :$l');
                       prov.updateValueFailure(l);
-                    }, (r) => prov.add(tooltipParamsMap[widget.id]!, r));
+                    }, (r) => addKVToState());
                   } else {
-                    prov.add(tooltipParamsMap[widget.id]!, val);
+                    addKVToState();
                   }
                 }
               : (val) {

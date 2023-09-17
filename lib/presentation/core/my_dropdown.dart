@@ -5,11 +5,13 @@ import 'package:provider/provider.dart';
 
 import 'package:dynamic_tooltip_plotline/application/tooltip/data_provider.dart';
 import 'package:dynamic_tooltip_plotline/infrastructure/tooltip/logo_api_repository.dart';
+import 'package:dynamic_tooltip_plotline/presentation/core/helper.dart';
 
 import 'style_elements.dart';
 
 class MyDropdown extends StatefulWidget {
   final List<String>? items;
+  final String? id;
   final bool updateTargetElementState;
   final bool updateBackgroundStyleState;
   final bool updateBackgroundStyleSourceState;
@@ -18,6 +20,7 @@ class MyDropdown extends StatefulWidget {
   const MyDropdown({
     Key? key,
     this.items,
+    this.id,
     this.updateTargetElementState = false,
     this.updateBackgroundStyleState = false,
     this.updateBackgroundStyleSourceState = false,
@@ -32,6 +35,7 @@ class MyDropdown extends StatefulWidget {
 class _MyDropdownState extends State<MyDropdown> {
   String _selectedVal = '';
   late final List<PopupMenuItem<String>> _items;
+  late final DataProvider prov;
 
   void updateState(DataProvider prov) {
     if (widget.updateBackgroundStyleState) {
@@ -55,32 +59,39 @@ class _MyDropdownState extends State<MyDropdown> {
         : _selectedVal;
   }
 
+  void initialiseVariables() {
+    prov = Provider.of<DataProvider>(context, listen: false);
+    initialisePopMenuItems();
+    prov.setDropdownValueFromState();
+  }
+
   void initialisePopMenuItems() {
-    DataProvider prov = Provider.of<DataProvider>(context, listen: false);
     _items = List.generate(
-      widget.items == null ? 5 : widget.items!.length,
+      widget.items!.length,
       (index) => PopupMenuItem(
-        child: Text(widget.items == null
-            ? 'Button ${index + 1}'
-            : widget.items![index]),
+        child: Text(widget.items![index]),
         onTap: () {
           log('Tapped index :$index');
-          _selectedVal = widget.items == null
-              ? 'Button ${index + 1}'
-              : widget.items![index];
+          _selectedVal = widget.items![index];
           updateState(prov);
+
+          if (widget.updateTargetElementState) {
+            prov.add(Helper.getJsonKeyFromHeadline(widget.id!), _selectedVal);
+          }
 
           ///Generates Logo Url from Repo
           ///_selectedVal here is the company name
           if (widget.updateBackgroundStyleState) {
-            if (widget.updateLogoUrl != null) {
-              widget.updateLogoUrl!(LogoAPIRepository().getUri(_selectedVal));
-            }
+            // if (widget.updateLogoUrl != null) {
+            prov.setLogoUrl(LogoAPIRepository().getUri(_selectedVal));
+            // widget.updateLogoUrl!();
+            // }
           }
           if (widget.updateBackgroundStyleSourceState) {
-            if (widget.updateSource != null) {
-              widget.updateSource!(_selectedVal);
-            }
+            // if (widget.updateSource != null) {
+            prov.setSource(_selectedVal);
+            // widget.updateSource!(_selectedVal);
+            // }
           }
         },
       ),
@@ -89,8 +100,8 @@ class _MyDropdownState extends State<MyDropdown> {
 
   @override
   void initState() {
+    initialiseVariables();
     super.initState();
-    initialisePopMenuItems();
   }
 
   @override

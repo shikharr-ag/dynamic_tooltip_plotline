@@ -33,13 +33,16 @@ const Color backgroundColor = Color.fromRGBO(245, 245, 245, 1);
 const Color backgroundColorTwo = Color.fromRGBO(134, 134, 134, 1);
 const Color borderColor = Color.fromRGBO(0, 0, 0, 0.15);
 const Color hintTextColor = Color.fromRGBO(0, 0, 0, 0.25);
-final Color errorColor = Color.fromARGB(255, 250, 115, 115)!;
+const Color errorColor = Color.fromARGB(255, 250, 115, 115);
+const Color renderButtonColor = Color.fromRGBO(9, 88, 217, 1);
 
 //Border Style
 InputBorder myBorder = OutlineInputBorder(
   borderSide: BorderSide(color: borderColor),
   borderRadius: BorderRadius.circular(6.0),
 );
+OutlinedBorder defaultElevatedButtonShape =
+    RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0));
 
 //Size Factors
 const num horizontalPaddingFactor = 0.08;

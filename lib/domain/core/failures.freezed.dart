@@ -19,7 +19,7 @@ mixin _$ValueFailure<T> {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() none,
-    required TResult Function(T failedValue, int max) exceedingLength,
+    required TResult Function() incompleteForm,
     required TResult Function(T failedValue) empty,
     required TResult Function(T failedValue) negativeDouble,
     required TResult Function() invalidColor,
@@ -29,7 +29,7 @@ mixin _$ValueFailure<T> {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? none,
-    TResult? Function(T failedValue, int max)? exceedingLength,
+    TResult? Function()? incompleteForm,
     TResult? Function(T failedValue)? empty,
     TResult? Function(T failedValue)? negativeDouble,
     TResult? Function()? invalidColor,
@@ -39,7 +39,7 @@ mixin _$ValueFailure<T> {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? none,
-    TResult Function(T failedValue, int max)? exceedingLength,
+    TResult Function()? incompleteForm,
     TResult Function(T failedValue)? empty,
     TResult Function(T failedValue)? negativeDouble,
     TResult Function()? invalidColor,
@@ -50,7 +50,7 @@ mixin _$ValueFailure<T> {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(NoError<T> value) none,
-    required TResult Function(ExceedingLength<T> value) exceedingLength,
+    required TResult Function(IncompleteForm<T> value) incompleteForm,
     required TResult Function(Empty<T> value) empty,
     required TResult Function(NegativeDouble<T> value) negativeDouble,
     required TResult Function(InvalidColor<T> value) invalidColor,
@@ -60,7 +60,7 @@ mixin _$ValueFailure<T> {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(NoError<T> value)? none,
-    TResult? Function(ExceedingLength<T> value)? exceedingLength,
+    TResult? Function(IncompleteForm<T> value)? incompleteForm,
     TResult? Function(Empty<T> value)? empty,
     TResult? Function(NegativeDouble<T> value)? negativeDouble,
     TResult? Function(InvalidColor<T> value)? invalidColor,
@@ -70,7 +70,7 @@ mixin _$ValueFailure<T> {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(NoError<T> value)? none,
-    TResult Function(ExceedingLength<T> value)? exceedingLength,
+    TResult Function(IncompleteForm<T> value)? incompleteForm,
     TResult Function(Empty<T> value)? empty,
     TResult Function(NegativeDouble<T> value)? negativeDouble,
     TResult Function(InvalidColor<T> value)? invalidColor,
@@ -143,7 +143,7 @@ class _$NoError<T> with DiagnosticableTreeMixin implements NoError<T> {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() none,
-    required TResult Function(T failedValue, int max) exceedingLength,
+    required TResult Function() incompleteForm,
     required TResult Function(T failedValue) empty,
     required TResult Function(T failedValue) negativeDouble,
     required TResult Function() invalidColor,
@@ -156,7 +156,7 @@ class _$NoError<T> with DiagnosticableTreeMixin implements NoError<T> {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? none,
-    TResult? Function(T failedValue, int max)? exceedingLength,
+    TResult? Function()? incompleteForm,
     TResult? Function(T failedValue)? empty,
     TResult? Function(T failedValue)? negativeDouble,
     TResult? Function()? invalidColor,
@@ -169,7 +169,7 @@ class _$NoError<T> with DiagnosticableTreeMixin implements NoError<T> {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? none,
-    TResult Function(T failedValue, int max)? exceedingLength,
+    TResult Function()? incompleteForm,
     TResult Function(T failedValue)? empty,
     TResult Function(T failedValue)? negativeDouble,
     TResult Function()? invalidColor,
@@ -186,7 +186,7 @@ class _$NoError<T> with DiagnosticableTreeMixin implements NoError<T> {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(NoError<T> value) none,
-    required TResult Function(ExceedingLength<T> value) exceedingLength,
+    required TResult Function(IncompleteForm<T> value) incompleteForm,
     required TResult Function(Empty<T> value) empty,
     required TResult Function(NegativeDouble<T> value) negativeDouble,
     required TResult Function(InvalidColor<T> value) invalidColor,
@@ -199,7 +199,7 @@ class _$NoError<T> with DiagnosticableTreeMixin implements NoError<T> {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(NoError<T> value)? none,
-    TResult? Function(ExceedingLength<T> value)? exceedingLength,
+    TResult? Function(IncompleteForm<T> value)? incompleteForm,
     TResult? Function(Empty<T> value)? empty,
     TResult? Function(NegativeDouble<T> value)? negativeDouble,
     TResult? Function(InvalidColor<T> value)? invalidColor,
@@ -212,7 +212,7 @@ class _$NoError<T> with DiagnosticableTreeMixin implements NoError<T> {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(NoError<T> value)? none,
-    TResult Function(ExceedingLength<T> value)? exceedingLength,
+    TResult Function(IncompleteForm<T> value)? incompleteForm,
     TResult Function(Empty<T> value)? empty,
     TResult Function(NegativeDouble<T> value)? negativeDouble,
     TResult Function(InvalidColor<T> value)? invalidColor,
@@ -231,127 +231,88 @@ abstract class NoError<T> implements ValueFailure<T> {
 }
 
 /// @nodoc
-abstract class _$$ExceedingLengthCopyWith<T, $Res> {
-  factory _$$ExceedingLengthCopyWith(_$ExceedingLength<T> value,
-          $Res Function(_$ExceedingLength<T>) then) =
-      __$$ExceedingLengthCopyWithImpl<T, $Res>;
-  @useResult
-  $Res call({T failedValue, int max});
+abstract class _$$IncompleteFormCopyWith<T, $Res> {
+  factory _$$IncompleteFormCopyWith(
+          _$IncompleteForm<T> value, $Res Function(_$IncompleteForm<T>) then) =
+      __$$IncompleteFormCopyWithImpl<T, $Res>;
 }
 
 /// @nodoc
-class __$$ExceedingLengthCopyWithImpl<T, $Res>
-    extends _$ValueFailureCopyWithImpl<T, $Res, _$ExceedingLength<T>>
-    implements _$$ExceedingLengthCopyWith<T, $Res> {
-  __$$ExceedingLengthCopyWithImpl(
-      _$ExceedingLength<T> _value, $Res Function(_$ExceedingLength<T>) _then)
+class __$$IncompleteFormCopyWithImpl<T, $Res>
+    extends _$ValueFailureCopyWithImpl<T, $Res, _$IncompleteForm<T>>
+    implements _$$IncompleteFormCopyWith<T, $Res> {
+  __$$IncompleteFormCopyWithImpl(
+      _$IncompleteForm<T> _value, $Res Function(_$IncompleteForm<T>) _then)
       : super(_value, _then);
-
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? failedValue = freezed,
-    Object? max = null,
-  }) {
-    return _then(_$ExceedingLength<T>(
-      failedValue: freezed == failedValue
-          ? _value.failedValue
-          : failedValue // ignore: cast_nullable_to_non_nullable
-              as T,
-      max: null == max
-          ? _value.max
-          : max // ignore: cast_nullable_to_non_nullable
-              as int,
-    ));
-  }
 }
 
 /// @nodoc
 
-class _$ExceedingLength<T>
+class _$IncompleteForm<T>
     with DiagnosticableTreeMixin
-    implements ExceedingLength<T> {
-  const _$ExceedingLength({required this.failedValue, required this.max});
-
-  @override
-  final T failedValue;
-  @override
-  final int max;
+    implements IncompleteForm<T> {
+  const _$IncompleteForm();
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'ValueFailure<$T>.exceedingLength(failedValue: $failedValue, max: $max)';
+    return 'ValueFailure<$T>.incompleteForm()';
   }
 
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
     properties
-      ..add(DiagnosticsProperty('type', 'ValueFailure<$T>.exceedingLength'))
-      ..add(DiagnosticsProperty('failedValue', failedValue))
-      ..add(DiagnosticsProperty('max', max));
+        .add(DiagnosticsProperty('type', 'ValueFailure<$T>.incompleteForm'));
   }
 
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$ExceedingLength<T> &&
-            const DeepCollectionEquality()
-                .equals(other.failedValue, failedValue) &&
-            (identical(other.max, max) || other.max == max));
+        (other.runtimeType == runtimeType && other is _$IncompleteForm<T>);
   }
 
   @override
-  int get hashCode => Object.hash(
-      runtimeType, const DeepCollectionEquality().hash(failedValue), max);
-
-  @JsonKey(ignore: true)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$ExceedingLengthCopyWith<T, _$ExceedingLength<T>> get copyWith =>
-      __$$ExceedingLengthCopyWithImpl<T, _$ExceedingLength<T>>(
-          this, _$identity);
+  int get hashCode => runtimeType.hashCode;
 
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() none,
-    required TResult Function(T failedValue, int max) exceedingLength,
+    required TResult Function() incompleteForm,
     required TResult Function(T failedValue) empty,
     required TResult Function(T failedValue) negativeDouble,
     required TResult Function() invalidColor,
     required TResult Function(T failedValue) invalidPhotoUrl,
   }) {
-    return exceedingLength(failedValue, max);
+    return incompleteForm();
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? none,
-    TResult? Function(T failedValue, int max)? exceedingLength,
+    TResult? Function()? incompleteForm,
     TResult? Function(T failedValue)? empty,
     TResult? Function(T failedValue)? negativeDouble,
     TResult? Function()? invalidColor,
     TResult? Function(T failedValue)? invalidPhotoUrl,
   }) {
-    return exceedingLength?.call(failedValue, max);
+    return incompleteForm?.call();
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? none,
-    TResult Function(T failedValue, int max)? exceedingLength,
+    TResult Function()? incompleteForm,
     TResult Function(T failedValue)? empty,
     TResult Function(T failedValue)? negativeDouble,
     TResult Function()? invalidColor,
     TResult Function(T failedValue)? invalidPhotoUrl,
     required TResult orElse(),
   }) {
-    if (exceedingLength != null) {
-      return exceedingLength(failedValue, max);
+    if (incompleteForm != null) {
+      return incompleteForm();
     }
     return orElse();
   }
@@ -360,56 +321,48 @@ class _$ExceedingLength<T>
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(NoError<T> value) none,
-    required TResult Function(ExceedingLength<T> value) exceedingLength,
+    required TResult Function(IncompleteForm<T> value) incompleteForm,
     required TResult Function(Empty<T> value) empty,
     required TResult Function(NegativeDouble<T> value) negativeDouble,
     required TResult Function(InvalidColor<T> value) invalidColor,
     required TResult Function(InvalidPhotoUrl<T> value) invalidPhotoUrl,
   }) {
-    return exceedingLength(this);
+    return incompleteForm(this);
   }
 
   @override
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(NoError<T> value)? none,
-    TResult? Function(ExceedingLength<T> value)? exceedingLength,
+    TResult? Function(IncompleteForm<T> value)? incompleteForm,
     TResult? Function(Empty<T> value)? empty,
     TResult? Function(NegativeDouble<T> value)? negativeDouble,
     TResult? Function(InvalidColor<T> value)? invalidColor,
     TResult? Function(InvalidPhotoUrl<T> value)? invalidPhotoUrl,
   }) {
-    return exceedingLength?.call(this);
+    return incompleteForm?.call(this);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(NoError<T> value)? none,
-    TResult Function(ExceedingLength<T> value)? exceedingLength,
+    TResult Function(IncompleteForm<T> value)? incompleteForm,
     TResult Function(Empty<T> value)? empty,
     TResult Function(NegativeDouble<T> value)? negativeDouble,
     TResult Function(InvalidColor<T> value)? invalidColor,
     TResult Function(InvalidPhotoUrl<T> value)? invalidPhotoUrl,
     required TResult orElse(),
   }) {
-    if (exceedingLength != null) {
-      return exceedingLength(this);
+    if (incompleteForm != null) {
+      return incompleteForm(this);
     }
     return orElse();
   }
 }
 
-abstract class ExceedingLength<T> implements ValueFailure<T> {
-  const factory ExceedingLength(
-      {required final T failedValue,
-      required final int max}) = _$ExceedingLength<T>;
-
-  T get failedValue;
-  int get max;
-  @JsonKey(ignore: true)
-  _$$ExceedingLengthCopyWith<T, _$ExceedingLength<T>> get copyWith =>
-      throw _privateConstructorUsedError;
+abstract class IncompleteForm<T> implements ValueFailure<T> {
+  const factory IncompleteForm() = _$IncompleteForm<T>;
 }
 
 /// @nodoc
@@ -485,7 +438,7 @@ class _$Empty<T> with DiagnosticableTreeMixin implements Empty<T> {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() none,
-    required TResult Function(T failedValue, int max) exceedingLength,
+    required TResult Function() incompleteForm,
     required TResult Function(T failedValue) empty,
     required TResult Function(T failedValue) negativeDouble,
     required TResult Function() invalidColor,
@@ -498,7 +451,7 @@ class _$Empty<T> with DiagnosticableTreeMixin implements Empty<T> {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? none,
-    TResult? Function(T failedValue, int max)? exceedingLength,
+    TResult? Function()? incompleteForm,
     TResult? Function(T failedValue)? empty,
     TResult? Function(T failedValue)? negativeDouble,
     TResult? Function()? invalidColor,
@@ -511,7 +464,7 @@ class _$Empty<T> with DiagnosticableTreeMixin implements Empty<T> {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? none,
-    TResult Function(T failedValue, int max)? exceedingLength,
+    TResult Function()? incompleteForm,
     TResult Function(T failedValue)? empty,
     TResult Function(T failedValue)? negativeDouble,
     TResult Function()? invalidColor,
@@ -528,7 +481,7 @@ class _$Empty<T> with DiagnosticableTreeMixin implements Empty<T> {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(NoError<T> value) none,
-    required TResult Function(ExceedingLength<T> value) exceedingLength,
+    required TResult Function(IncompleteForm<T> value) incompleteForm,
     required TResult Function(Empty<T> value) empty,
     required TResult Function(NegativeDouble<T> value) negativeDouble,
     required TResult Function(InvalidColor<T> value) invalidColor,
@@ -541,7 +494,7 @@ class _$Empty<T> with DiagnosticableTreeMixin implements Empty<T> {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(NoError<T> value)? none,
-    TResult? Function(ExceedingLength<T> value)? exceedingLength,
+    TResult? Function(IncompleteForm<T> value)? incompleteForm,
     TResult? Function(Empty<T> value)? empty,
     TResult? Function(NegativeDouble<T> value)? negativeDouble,
     TResult? Function(InvalidColor<T> value)? invalidColor,
@@ -554,7 +507,7 @@ class _$Empty<T> with DiagnosticableTreeMixin implements Empty<T> {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(NoError<T> value)? none,
-    TResult Function(ExceedingLength<T> value)? exceedingLength,
+    TResult Function(IncompleteForm<T> value)? incompleteForm,
     TResult Function(Empty<T> value)? empty,
     TResult Function(NegativeDouble<T> value)? negativeDouble,
     TResult Function(InvalidColor<T> value)? invalidColor,
@@ -654,7 +607,7 @@ class _$NegativeDouble<T>
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() none,
-    required TResult Function(T failedValue, int max) exceedingLength,
+    required TResult Function() incompleteForm,
     required TResult Function(T failedValue) empty,
     required TResult Function(T failedValue) negativeDouble,
     required TResult Function() invalidColor,
@@ -667,7 +620,7 @@ class _$NegativeDouble<T>
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? none,
-    TResult? Function(T failedValue, int max)? exceedingLength,
+    TResult? Function()? incompleteForm,
     TResult? Function(T failedValue)? empty,
     TResult? Function(T failedValue)? negativeDouble,
     TResult? Function()? invalidColor,
@@ -680,7 +633,7 @@ class _$NegativeDouble<T>
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? none,
-    TResult Function(T failedValue, int max)? exceedingLength,
+    TResult Function()? incompleteForm,
     TResult Function(T failedValue)? empty,
     TResult Function(T failedValue)? negativeDouble,
     TResult Function()? invalidColor,
@@ -697,7 +650,7 @@ class _$NegativeDouble<T>
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(NoError<T> value) none,
-    required TResult Function(ExceedingLength<T> value) exceedingLength,
+    required TResult Function(IncompleteForm<T> value) incompleteForm,
     required TResult Function(Empty<T> value) empty,
     required TResult Function(NegativeDouble<T> value) negativeDouble,
     required TResult Function(InvalidColor<T> value) invalidColor,
@@ -710,7 +663,7 @@ class _$NegativeDouble<T>
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(NoError<T> value)? none,
-    TResult? Function(ExceedingLength<T> value)? exceedingLength,
+    TResult? Function(IncompleteForm<T> value)? incompleteForm,
     TResult? Function(Empty<T> value)? empty,
     TResult? Function(NegativeDouble<T> value)? negativeDouble,
     TResult? Function(InvalidColor<T> value)? invalidColor,
@@ -723,7 +676,7 @@ class _$NegativeDouble<T>
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(NoError<T> value)? none,
-    TResult Function(ExceedingLength<T> value)? exceedingLength,
+    TResult Function(IncompleteForm<T> value)? incompleteForm,
     TResult Function(Empty<T> value)? empty,
     TResult Function(NegativeDouble<T> value)? negativeDouble,
     TResult Function(InvalidColor<T> value)? invalidColor,
@@ -795,7 +748,7 @@ class _$InvalidColor<T>
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() none,
-    required TResult Function(T failedValue, int max) exceedingLength,
+    required TResult Function() incompleteForm,
     required TResult Function(T failedValue) empty,
     required TResult Function(T failedValue) negativeDouble,
     required TResult Function() invalidColor,
@@ -808,7 +761,7 @@ class _$InvalidColor<T>
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? none,
-    TResult? Function(T failedValue, int max)? exceedingLength,
+    TResult? Function()? incompleteForm,
     TResult? Function(T failedValue)? empty,
     TResult? Function(T failedValue)? negativeDouble,
     TResult? Function()? invalidColor,
@@ -821,7 +774,7 @@ class _$InvalidColor<T>
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? none,
-    TResult Function(T failedValue, int max)? exceedingLength,
+    TResult Function()? incompleteForm,
     TResult Function(T failedValue)? empty,
     TResult Function(T failedValue)? negativeDouble,
     TResult Function()? invalidColor,
@@ -838,7 +791,7 @@ class _$InvalidColor<T>
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(NoError<T> value) none,
-    required TResult Function(ExceedingLength<T> value) exceedingLength,
+    required TResult Function(IncompleteForm<T> value) incompleteForm,
     required TResult Function(Empty<T> value) empty,
     required TResult Function(NegativeDouble<T> value) negativeDouble,
     required TResult Function(InvalidColor<T> value) invalidColor,
@@ -851,7 +804,7 @@ class _$InvalidColor<T>
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(NoError<T> value)? none,
-    TResult? Function(ExceedingLength<T> value)? exceedingLength,
+    TResult? Function(IncompleteForm<T> value)? incompleteForm,
     TResult? Function(Empty<T> value)? empty,
     TResult? Function(NegativeDouble<T> value)? negativeDouble,
     TResult? Function(InvalidColor<T> value)? invalidColor,
@@ -864,7 +817,7 @@ class _$InvalidColor<T>
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(NoError<T> value)? none,
-    TResult Function(ExceedingLength<T> value)? exceedingLength,
+    TResult Function(IncompleteForm<T> value)? incompleteForm,
     TResult Function(Empty<T> value)? empty,
     TResult Function(NegativeDouble<T> value)? negativeDouble,
     TResult Function(InvalidColor<T> value)? invalidColor,
@@ -960,7 +913,7 @@ class _$InvalidPhotoUrl<T>
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() none,
-    required TResult Function(T failedValue, int max) exceedingLength,
+    required TResult Function() incompleteForm,
     required TResult Function(T failedValue) empty,
     required TResult Function(T failedValue) negativeDouble,
     required TResult Function() invalidColor,
@@ -973,7 +926,7 @@ class _$InvalidPhotoUrl<T>
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? none,
-    TResult? Function(T failedValue, int max)? exceedingLength,
+    TResult? Function()? incompleteForm,
     TResult? Function(T failedValue)? empty,
     TResult? Function(T failedValue)? negativeDouble,
     TResult? Function()? invalidColor,
@@ -986,7 +939,7 @@ class _$InvalidPhotoUrl<T>
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? none,
-    TResult Function(T failedValue, int max)? exceedingLength,
+    TResult Function()? incompleteForm,
     TResult Function(T failedValue)? empty,
     TResult Function(T failedValue)? negativeDouble,
     TResult Function()? invalidColor,
@@ -1003,7 +956,7 @@ class _$InvalidPhotoUrl<T>
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(NoError<T> value) none,
-    required TResult Function(ExceedingLength<T> value) exceedingLength,
+    required TResult Function(IncompleteForm<T> value) incompleteForm,
     required TResult Function(Empty<T> value) empty,
     required TResult Function(NegativeDouble<T> value) negativeDouble,
     required TResult Function(InvalidColor<T> value) invalidColor,
@@ -1016,7 +969,7 @@ class _$InvalidPhotoUrl<T>
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(NoError<T> value)? none,
-    TResult? Function(ExceedingLength<T> value)? exceedingLength,
+    TResult? Function(IncompleteForm<T> value)? incompleteForm,
     TResult? Function(Empty<T> value)? empty,
     TResult? Function(NegativeDouble<T> value)? negativeDouble,
     TResult? Function(InvalidColor<T> value)? invalidColor,
@@ -1029,7 +982,7 @@ class _$InvalidPhotoUrl<T>
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(NoError<T> value)? none,
-    TResult Function(ExceedingLength<T> value)? exceedingLength,
+    TResult Function(IncompleteForm<T> value)? incompleteForm,
     TResult Function(Empty<T> value)? empty,
     TResult Function(NegativeDouble<T> value)? negativeDouble,
     TResult Function(InvalidColor<T> value)? invalidColor,

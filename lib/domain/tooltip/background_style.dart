@@ -13,11 +13,20 @@ class BackgroundStyle {
     if (obj.color != null) {
       return "${obj.color!.value}_COLOR";
     } else {
-      if (isUrl) {
+      if (obj.isUrl) {
         return obj.src!;
       } else {
         return "${obj.src}_FILE";
       }
+    }
+  }
+
+  ///Returns a string based on the object
+  String genHintText(BackgroundStyle obj) {
+    if (obj.color != null) {
+      return '';
+    } else {
+      return 'Image selected.';
     }
   }
 
@@ -27,14 +36,19 @@ class BackgroundStyle {
     String? src;
     bool url = false;
     if (s.endsWith("_COLOR")) {
-      c = Color(int.parse(s.substring(0, (s.length - "_COLOR".length + 1))));
+      c = Color(int.parse(s.substring(0, (s.length - "_COLOR".length))));
     } else if (s.endsWith("_FILE")) {
-      src = s.substring(0, (s.length - "_FILE".length + 1));
+      src = s.substring(0, (s.length - "_FILE".length));
       url = false;
     } else {
       url = true;
       src = s;
     }
     return BackgroundStyle(color: c, isUrl: url, src: s);
+  }
+
+  ///Get file path
+  String getFilePath(String src) {
+    return src.substring(0, (src.length - "_FILE".length));
   }
 }

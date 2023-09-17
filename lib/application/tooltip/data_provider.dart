@@ -1,18 +1,22 @@
 import 'dart:developer';
 
 import 'package:dynamic_tooltip_plotline/domain/tooltip/background_style.dart';
+import 'package:dynamic_tooltip_plotline/infrastructure/tooltip/shared_preferences_repository.dart';
 import 'package:dynamic_tooltip_plotline/presentation/core/constants.dart';
+import 'package:dynamic_tooltip_plotline/presentation/core/helper.dart';
 import 'package:flutter/material.dart';
 
 import '../../domain/core/failures.dart';
+import '../../domain/tooltip/tooltip_params.dart';
 
 // import '../../domain/tooltip/tooltip_params.dart';
 
 class DataProvider extends ChangeNotifier {
   //Private States
-  final Map<String, Object> _styleFactors = {};
+  final GlobalKey<FormState> _formKey = GlobalKey();
+  Map<String, Object> _styleFactors = {};
   ValueFailure _failure = ValueFailure.none();
-  // final ToolTipParams _params = ToolTipParams.fromJson({});
+  ToolTipParams _params = ToolTipParams.fromJson({});
   String _logoUrl = '';
   bool _isFormComplete = false;
   Map<String, Object> get styleFactors => _styleFactors;
@@ -40,8 +44,11 @@ class DataProvider extends ChangeNotifier {
   bool _isSrcReady = false;
   int _dialogBgColorCode = 0;
   Color _dialogStateColor = Colors.black;
+  bool _hasOldData = false;
+  GlobalKey<FormState> get formKey => _formKey;
 
   //Getters
+  ToolTipParams get params => _params;
   String get logoUrl => _logoUrl;
   ValueFailure get failure => _failure;
   bool get isFormComplete => _isFormComplete;
@@ -60,15 +67,51 @@ class DataProvider extends ChangeNotifier {
   bool get isSrcReady => _isSrcReady;
   int get dialogBgColorCode => _dialogBgColorCode;
   Color get dialogStateColor => _dialogStateColor;
+  bool get hasOldData => _hasOldData;
 
-  void add(String key, Object val) {
-    log('Color $val ');
-    String s =
-        BackgroundStyle().genTooltipParam(BackgroundStyle(color: val as Color));
+  void checkHasOldData() {
+    _hasOldData = SharedPreferencesRepository().checkIfDataExists();
+    // notifyListeners();
+  }
 
-    _styleFactors.update(key, (_) => key == orderIdBgColor ? s : val,
-        ifAbsent: () => key == orderIdBgColor ? s : val);
-    // log('Updated Factors: $_styleFactors');
+  Object? getValFromParams(String val) {
+    String key = Helper.getJsonKeyFromHeadline(val);
+    return _styleFactors[key];
+  }
+
+  Color getDefaultColor(String val) {
+    Object? j = getValFromParams(val);
+    return j == null ? Colors.white : Color(int.parse(j.toString()));
+  }
+
+  Color getBackgroundStyleColor(String val) {
+    Object? j = getValFromParams(val);
+    BackgroundStyle obj = BackgroundStyle().getObjectFromString(j.toString());
+    return obj.color ?? Colors.white;
+  }
+
+  void setDropdownValueFromState() {
+    setTargetElementState(_params.targetElement, notify: false);
+  }
+
+  ///Sets K,V pair in StyleFactors map
+  void add(String key, Object val,
+      {bool castToInt = false, bool castToDouble = false}) {
+    if (key == Helper.getJsonKeyFromHeadline(orderIdBgColor)) {
+      String s = '';
+      s = BackgroundStyle()
+          .genTooltipParam(BackgroundStyle(color: val as Color));
+      val = s;
+    }
+    if (castToInt) {
+      val = int.parse(val.toString());
+    }
+    if (castToDouble) {
+      val = double.parse(val.toString());
+      log('Type casted to double for $key');
+    }
+    _styleFactors.update(key, (_) => val, ifAbsent: () => val);
+    log('Updated Factors: $_styleFactors');
     _setNoErrorState();
     notifyListeners();
   }
@@ -104,9 +147,11 @@ class DataProvider extends ChangeNotifier {
   }
 
   ///Used to set target element in state
-  void setTargetElementState(String s) {
+  void setTargetElementState(String s, {bool notify = true}) {
     _targetElementState = s;
-    notifyListeners();
+    if (notify) {
+      notifyListeners();
+    }
   }
 
   ///Used to set the domain in state
@@ -118,11 +163,6 @@ class DataProvider extends ChangeNotifier {
   ///Used to set the source in state
   void setBackgroundStyleSourceState(String s) {
     _backgroundStyleSourceState = s;
-    notifyListeners();
-  }
-
-  void setBackgroundStyleRadioGroupVal(int val) {
-    _backgroundStyleRadioGroupVal = val;
     notifyListeners();
   }
 
@@ -142,6 +182,11 @@ class DataProvider extends ChangeNotifier {
 
   void showImage() {
     _previewImage = true;
+    notifyListeners();
+  }
+
+  void clearImage() {
+    _previewImage = false;
     notifyListeners();
   }
 
@@ -178,6 +223,7 @@ class DataProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  ///Used to check if src and image has been picked
   void setSrcReady() {
     if ((_isSrcGallery && _filePath.isNotEmpty) ||
         (_isSrcLogos || _isSrcCustom) && (_logoUrl.isNotEmpty)) {
@@ -188,27 +234,39 @@ class DataProvider extends ChangeNotifier {
   }
 
   ///Sets the image to tooltip parmams
-  void setImage() {
+  String setImageAndGetText() {
+    String key = Helper.getJsonKeyFromHeadline(orderIdBgColor);
+    String text = '';
     if (_filePath.isNotEmpty) {
-      _styleFactors.update(
-          orderIdBgColor,
-          (value) => BackgroundStyle()
-              .genTooltipParam(BackgroundStyle(src: _filePath, isUrl: false)));
+      text = BackgroundStyle()
+          .genTooltipParam(BackgroundStyle(src: _filePath, isUrl: false));
+      _styleFactors.update(key, (_) => text, ifAbsent: () => text);
     } else {
-      _styleFactors.update(
-          orderIdBgColor,
-          (value) => BackgroundStyle()
-              .genTooltipParam(BackgroundStyle(src: _logoUrl, isUrl: true)));
+      text = BackgroundStyle()
+          .genTooltipParam(BackgroundStyle(src: _logoUrl, isUrl: true));
+      _styleFactors.update(key, (_) => text, ifAbsent: () => text);
     }
+
+    return text;
   }
 
   void setDialogStateColor(Color c) {
     _dialogStateColor = c;
     notifyListeners();
   }
-  // void setParams(ToolTipParams params) {
-  //   _params = params;
-  // }
+
+  void setParams() {
+    log('Style: $_styleFactors');
+    _params = ToolTipParams.fromJson(_styleFactors);
+    log('Params: $_params');
+  }
+
+  void overwriteTooltipParams() {
+    Map<String, dynamic> f = SharedPreferencesRepository().getStyleFactors();
+    _styleFactors = Helper.convertToUsableForm(f);
+    _params = ToolTipParams.fromJson(f);
+    notifyListeners();
+  }
 
   // /// Removes all items from the cart.
   // void removeAll() {

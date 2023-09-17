@@ -1,16 +1,18 @@
 import 'dart:developer';
 
-import 'package:dynamic_tooltip_plotline/application/tooltip/data_provider.dart';
-import 'package:dynamic_tooltip_plotline/presentation/core/style_elements.dart';
+import 'package:dynamic_tooltip_plotline/application/tooltip/design_page_provider.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:provider/provider.dart';
 
+import '../../application/tooltip/data_provider.dart';
 import '../../domain/core/failures.dart';
+import '../../infrastructure/tooltip/shared_preferences_repository.dart';
 import '../core/build_helper_widgets.dart';
 import '../core/constants.dart';
-import 'package:flutter/material.dart';
-
 import '../core/helper.dart';
+import '../core/style_elements.dart';
 
 class DesignTooltipPage extends StatefulWidget {
   static const routeName = '/design';
@@ -21,17 +23,30 @@ class DesignTooltipPage extends StatefulWidget {
 }
 
 class _DesignTooltipPageState extends State<DesignTooltipPage> {
-  GlobalKey<FormState> formKey = GlobalKey();
+  late GlobalKey<FormState> formKey;
+  late final DataProvider prov;
+
+  @override
+  void dispose() {
+    prov.removeListener(() {});
+    super.dispose();
+  }
+
+  void initialiseVariables() {
+    prov = Provider.of<DataProvider>(context, listen: false);
+    formKey = prov.formKey;
+    prov.checkHasOldData();
+  }
+
   @override
   void initState() {
+    FlutterNativeSplash.remove();
     super.initState();
-
+    initialiseVariables();
     SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
-      Provider.of<DataProvider>(context, listen: false).addListener(() {
-        ValueFailure f =
-            Provider.of<DataProvider>(context, listen: false).failure;
-
-        if (f != ValueFailure.none()) {
+      prov.addListener(() {
+        ValueFailure f = prov.failure;
+        if (f != const ValueFailure.none()) {
           ScaffoldMessenger.of(context).showSnackBar(buildMySnackBar(
             Helper.getErrorMessage(f),
           ));
@@ -42,8 +57,15 @@ class _DesignTooltipPageState extends State<DesignTooltipPage> {
 
   void onPressedHandler(BuildContext context, GlobalKey<FormState> key) {
     key.currentState!.validate();
-    if (Provider.of<DataProvider>(context, listen: false).isFormComplete) {
+    if (prov.isFormComplete) {
       //TODO: shared pref
+      log('${prov
+        ..styleFactors
+        ..setParams()}');
+      SharedPreferencesRepository().storeStyleFactors(prov.params);
+      log('${SharedPreferencesRepository().getStyleFactors()}');
+      // RouteNavigator.navigateReplacementWithFade(
+      //     routeName: PreviewTooltipPage.routeName, context: context);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         buildMySnackBar('Please fill the form completely. :)'),
@@ -64,62 +86,65 @@ class _DesignTooltipPageState extends State<DesignTooltipPage> {
           body: SizedBox(
             height: MediaQuery.of(context).size.height,
             width: MediaQuery.of(context).size.width,
-            child: LayoutBuilder(builder: ((context, constraints) {
-              // log('Insets: ${MediaQuery.of(context).viewInsets} \t Padding: ${MediaQuery.of(context).viewPadding}');
-              // log('MaxHeight: ${constraints.maxHeight}');
-              // log('MediaQuery Height: ${MediaQuery.of(context).size.height}');
-              var topPadding = constraints.maxHeight * 0.05;
-              var bottomPadding = constraints.maxHeight * 0.005;
+            child: Consumer<DesignPageProvider>(builder: (context, dprov, _) {
+              return LayoutBuilder(builder: ((context, constraints) {
+                dprov.setConstraints(constraints);
+                // log('Insets: ${MediaQuery.of(context).viewInsets} \t Padding: ${MediaQuery.of(context).viewPadding}');
+                // log('MaxHeight: ${constraints.maxHeight}');
+                // log('MediaQuery Height: ${MediaQuery.of(context).size.height}');
+                var topPadding = dprov.getTopPadding();
+                var bottomPadding = dprov.getBottomPadding();
 
-              var listViewWidgetHeight = MediaQuery.of(context).size.height -
-                  (topPadding + bottomPadding);
-              var leftAndRightPadding =
-                  constraints.maxWidth * horizontalPaddingFactor;
-              var listViewWidth =
-                  constraints.maxWidth - 2 * leftAndRightPadding;
-              log('Bottom padding: $bottomPadding');
-              return Stack(
-                children: [
-                  Align(
-                    alignment: Alignment.bottomCenter,
-                    child: Container(
-                      height: listViewWidgetHeight / 18,
-                      width: listViewWidth * 0.4,
-                      alignment: Alignment.centerRight,
-                      // color: Colors.yellow,
-                      child: Image.asset(
-                        'assets/gifs/arrow_nobg.gif',
-                        color: Colors.black,
-                        // scale: 2,
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.fromLTRB(leftAndRightPadding,
-                        topPadding, leftAndRightPadding, bottomPadding),
-                    child: Container(
-                      // color: Colors.red[100],
-                      constraints: BoxConstraints.tightFor(
-                          height: double.infinity, width: listViewWidth),
-                      child: Form(
-                        key: formKey,
-                        child: ListView(
-                          children: (widgetBuildOrder.map((e) {
-                            return ConstrainedBox(
-                                constraints: BoxConstraints.tightFor(
-                                    width: listViewWidth,
-                                    height: listViewWidgetHeight / 8.5),
-                                child: getWidgetFromOrderId(e, listViewWidth,
-                                    onPressed: () =>
-                                        onPressedHandler(context, formKey)));
-                          }).toList()),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              );
-            })),
+                var listViewWidgetHeight = MediaQuery.of(context).size.height -
+                    (topPadding + bottomPadding);
+                var leftAndRightPadding = dprov.getHorizontalPadding();
+                var listViewWidth = dprov.getListViewWidth();
+                log('Bottom padding: $bottomPadding');
+                return dprov.isLoading
+                    ? buildLoader()
+                    : Stack(
+                        children: [
+                          Align(
+                            alignment: Alignment.bottomCenter,
+                            child: Container(
+                              height: listViewWidgetHeight / 18,
+                              width: listViewWidth * 0.4,
+                              alignment: Alignment.centerRight,
+                              // color: Colors.yellow,
+                              child: Image.asset(
+                                'assets/gifs/arrow_nobg.gif',
+                                color: Colors.black,
+                                // scale: 2,
+                              ),
+                            ),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.fromLTRB(leftAndRightPadding,
+                                topPadding, leftAndRightPadding, bottomPadding),
+                            child: Container(
+                              // color: Colors.red[100],
+                              constraints: BoxConstraints.tightFor(
+                                  height: double.infinity,
+                                  width: listViewWidth),
+                              child: Form(
+                                key: formKey,
+                                child: ListView(
+                                  children: (widgetBuildOrder.map((e) {
+                                    return ConstrainedBox(
+                                        constraints: BoxConstraints.tightFor(
+                                            width: listViewWidth,
+                                            height: listViewWidgetHeight / 8.5),
+                                        child: getWidgetFromOrderId(
+                                            e, dprov, prov, context));
+                                  }).toList()),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      );
+              }));
+            }),
           )),
     );
   }

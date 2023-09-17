@@ -1,20 +1,21 @@
 import 'dart:developer';
 import 'dart:io';
 
-import 'package:dynamic_tooltip_plotline/application/tooltip/data_provider.dart';
-import 'package:dynamic_tooltip_plotline/domain/tooltip/my_color.dart';
-import 'package:dynamic_tooltip_plotline/infrastructure/core/api_call_constants.dart';
-import 'package:dynamic_tooltip_plotline/infrastructure/tooltip/logo_api_repository.dart';
-import 'package:dynamic_tooltip_plotline/presentation/core/build_helper_widgets.dart';
-import 'package:dynamic_tooltip_plotline/presentation/core/constants.dart';
-import 'package:dynamic_tooltip_plotline/presentation/core/my_dropdown.dart';
-import 'package:dynamic_tooltip_plotline/presentation/core/my_textbox_template.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
+import 'helper.dart';
+import 'my_dropdown.dart';
+import 'my_textbox_template.dart';
+
+import '../../application/tooltip/data_provider.dart';
 import '../../domain/core/errors.dart';
+import '../../domain/tooltip/background_style.dart';
+import '../../domain/tooltip/my_color.dart';
+import '../../infrastructure/core/api_call_constants.dart';
+import 'build_helper_widgets.dart';
+import 'constants.dart';
 import 'style_elements.dart';
 
 class BackgroundStyleBox extends StatefulWidget {
@@ -29,31 +30,29 @@ class _BackgroundStyleBoxState extends State<BackgroundStyleBox>
     with SingleTickerProviderStateMixin {
   Color _defaultColor = Colors.white;
   bool showText = true;
+  String hintText = '';
   late TabController ctrl;
   Map<String, Widget> sourceAndWidget = {};
-
-  int groupVal = 0;
-
-  void validateColorOrCatchError(Color c) {
-    DataProvider prov = Provider.of<DataProvider>(context, listen: false);
-    MyColor(_defaultColor).value.fold((l) => prov.updateValueFailure(l),
-        (r) => prov.add(tooltipParamsMap[widget.id]!, r));
-  }
-
-  void mapSourceAndWidgets() {
-    Provider.of<DataProvider>(context, listen: false)
-        .backgroundStyleSourceAndHeadlines
-        .keys
-        .map((e) {});
-  }
+  late DataProvider prov;
 
   void updateTabIndex(int i) {
-    Provider.of<DataProvider>(context, listen: false).updateTabIndex(i);
+    prov.updateTabIndex(i);
+  }
+
+  void initialiseVariables() {
+    prov = Provider.of<DataProvider>(context, listen: false);
+    ctrl = TabController(length: 2, vsync: this);
+    Object? j = prov.getValFromParams(widget.id);
+    String? s = j?.toString();
+    BackgroundStyle? obj =
+        s == null ? null : BackgroundStyle().getObjectFromString(s);
+    _defaultColor = prov.getBackgroundStyleColor(widget.id);
+    hintText = obj == null ? 'Input' : BackgroundStyle().genHintText(obj);
   }
 
   @override
   void initState() {
-    ctrl = TabController(length: 2, vsync: this);
+    initialiseVariables();
     ctrl.addListener(() {
       updateTabIndex(ctrl.index);
     });
@@ -91,9 +90,9 @@ class _BackgroundStyleBoxState extends State<BackgroundStyleBox>
       return MyDropdown(
         items: APICallConsts.companyAndDomains.keys.toList(),
         updateBackgroundStyleState: true,
-        updateLogoUrl: (String url) {
-          prov.setLogoUrl(url);
-        },
+        // updateLogoUrl: (String url) {
+        //   prov.setLogoUrl(url);
+        // },
       );
     } else if (isCustom) {
       return MyTextboxTemplate(
@@ -135,14 +134,13 @@ class _BackgroundStyleBoxState extends State<BackgroundStyleBox>
                             child:
                                 buildMyColorPicker(color ?? Colors.black, (p0) {
                               color = p0;
-                              // _defaultColor = p0;
-                              prov.setDialogStateColor(p0);
                             }),
                           ),
                           buildTextButton(doneIcon, 'Select Color', () {
-                            // log('def color: $_defaultColor');
-                            prov.add(orderIdBgColor, prov.dialogStateColor);
-                            Navigator.of(context).pop(color);
+                            prov.add(Helper.getJsonKeyFromHeadline(widget.id),
+                                color ?? Colors.black);
+                            Navigator.of(context)
+                                .pop(BackgroundStyle(color: color));
                           }),
                         ],
                       ),
@@ -157,7 +155,7 @@ class _BackgroundStyleBoxState extends State<BackgroundStyleBox>
                                     .backgroundStyleSourceAndHeadlines.keys
                                     .toList(),
                                 updateBackgroundStyleSourceState: true,
-                                updateSource: (x) => prov.setSource(x),
+                                // updateSource: (x) => prov.setSource(x),
                               ),
                             ),
                           ),
@@ -177,6 +175,7 @@ class _BackgroundStyleBoxState extends State<BackgroundStyleBox>
                                 Icons.search,
                                 'Preview Image',
                                 () {
+                                  prov.clearImage();
                                   prov.showImage();
                                   log('Current State: ${prov.backgroundStyleSourceState}');
                                 },
@@ -192,7 +191,10 @@ class _BackgroundStyleBoxState extends State<BackgroundStyleBox>
                             ),
                           ),
                           buildTextButton(
-                              doneIcon, 'Select Image', () => prov.setImage()),
+                              doneIcon,
+                              'Select Image',
+                              () => Navigator.of(context).pop(BackgroundStyle(
+                                  src: prov.setImageAndGetText()))),
                         ],
                       ),
                     ],
@@ -270,18 +272,16 @@ class _BackgroundStyleBoxState extends State<BackgroundStyleBox>
                 borderRadius: BorderRadius.circular(6.0),
               ),
               alignment: Alignment.centerLeft,
-              child: showText
-                  ? const Text(
-                      'Input',
-                      style: bodySmall,
-                    )
-                  : null,
+              child: Text(
+                hintText,
+                style: hintText == 'Input' ? bodySmall : bodyMedium,
+              ),
             ),
           ),
           IconButton(
             icon: const Icon(Icons.edit),
             onPressed: () async {
-              Color? color = await showDialog(
+              BackgroundStyle? obj = await showDialog(
                   context: context,
                   builder: (context) {
                     Color? color;
@@ -292,7 +292,10 @@ class _BackgroundStyleBoxState extends State<BackgroundStyleBox>
                   });
 
               setState(() {
-                _defaultColor = color ?? Colors.white;
+                hintText =
+                    obj == null ? 'Input' : BackgroundStyle().genHintText(obj);
+                _defaultColor =
+                    obj == null ? Colors.white : obj.color ?? Colors.white;
               });
             },
           ),

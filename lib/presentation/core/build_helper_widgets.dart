@@ -1,9 +1,16 @@
+import 'dart:developer';
+
+import 'package:dynamic_tooltip_plotline/application/tooltip/design_page_provider.dart';
+import 'package:dynamic_tooltip_plotline/domain/core/failures.dart';
 import 'package:dynamic_tooltip_plotline/presentation/core/background_style_box.dart';
 import 'package:dynamic_tooltip_plotline/presentation/core/my_textbox_template.dart';
 import 'package:dynamic_tooltip_plotline/presentation/core/style_elements.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:provider/provider.dart';
 
+import '../../application/tooltip/data_provider.dart';
+import '../../infrastructure/tooltip/shared_preferences_repository.dart';
+import '../pages/preview_tooltip_page.dart';
 import 'helper.dart';
 import 'my_colored_textbox.dart';
 import 'my_dropdown.dart';
@@ -12,11 +19,16 @@ import 'column_child.dart';
 import 'package:flutter/material.dart';
 
 import 'constants.dart';
+import 'route_navigator.dart';
 
 Widget buildTargetElement(String id, double w) {
   return ColumnChild(
     headline: id,
-    widget: MyDropdown(updateTargetElementState: true),
+    widget: MyDropdown(
+      items: buttons,
+      updateTargetElementState: true,
+      id: id,
+    ),
     width: w,
   );
 }
@@ -46,7 +58,7 @@ Widget buildTextSizeAndPadding(String id1, String id2, double w) {
           width: w,
         ),
       ),
-      Spacer(),
+      const Spacer(),
       Expanded(
         flex: 3,
         child: ColumnChild(
@@ -62,36 +74,62 @@ Widget buildTextSizeAndPadding(String id1, String id2, double w) {
   );
 }
 
-Widget buildRenderTooltipButton(String id, void Function()? onPressed) {
+Widget buildRenderTooltipButton(String id1, String id2, DataProvider prov,
+    DesignPageProvider dprov, BuildContext context) {
   return Row(
-    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+    mainAxisAlignment: MainAxisAlignment.center,
     children: [
-      ElevatedButton(
-        onPressed: onPressed,
-        child: Text(
-          id,
-          style: bodyMedium.copyWith(color: Colors.white),
-        ),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: const Color.fromARGB(255, 12, 120, 208),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10.0),
+      Expanded(
+        child: ElevatedButton(
+          onPressed: () {
+            // dprov.setLoading();
+            prov.formKey.currentState!.validate();
+            if (prov.isFormComplete) {
+              //TODO: shared pref
+              log('${prov
+                ..styleFactors
+                ..setParams()}');
+              SharedPreferencesRepository().storeStyleFactors(prov.params);
+              // log('${SharedPreferencesRepository().getStyleFactors()}');
+              RouteNavigator.navigateReplacementWithFade(
+                  routeName: PreviewTooltipPage.routeName, context: context);
+            } else {
+              prov.updateValueFailure(const ValueFailure.incompleteForm());
+            }
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: renderButtonColor,
+            shape: defaultElevatedButtonShape,
+          ),
+          child: Text(
+            id1,
+            style: bodyMedium.copyWith(color: Colors.white),
           ),
         ),
       ),
-      ElevatedButton(
-        onPressed: onPressed,
-        child: Text(
-          id,
-          style: bodyMedium.copyWith(color: Colors.white),
+      if (prov.hasOldData) ...[
+        const SizedBox(
+          width: 10,
         ),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: const Color.fromARGB(255, 12, 120, 208),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10.0),
+        Expanded(
+            child: ElevatedButton(
+          onPressed: () async {
+            dprov.setLoading();
+
+            prov.overwriteTooltipParams();
+            await Future.delayed(const Duration(milliseconds: 100));
+            dprov.setLoaded();
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: renderButtonColor,
+            shape: defaultElevatedButtonShape,
           ),
-        ),
-      ),
+          child: Text(
+            id2,
+            style: bodyMedium.copyWith(color: Colors.white),
+          ),
+        )),
+      ]
     ],
   );
 }
@@ -114,8 +152,9 @@ Widget buildColorTextbox(String id, double w) {
       ));
 }
 
-Widget getWidgetFromOrderId(String orderId, double w,
-    {void Function()? onPressed}) {
+Widget getWidgetFromOrderId(String orderId, DesignPageProvider dprov,
+    DataProvider prov, BuildContext context) {
+  double w = dprov.getListViewWidth();
   switch (orderId) {
     case orderIdTargetElement:
       return buildTargetElement(orderIdTargetElement, w);
@@ -140,8 +179,12 @@ Widget getWidgetFromOrderId(String orderId, double w,
       String id1 = sub[0];
       String id2 = sub[1];
       return buildTextSizeAndPadding(id1, id2, w);
-    case orderIdRenderTooltip:
-      return buildRenderTooltipButton(orderIdRenderTooltip, onPressed);
+    case orderIdRenderTooltipAndPreviousStyle:
+      List<String> sub =
+          Helper.getSubstrings(orderIdRenderTooltipAndPreviousStyle);
+      String id1 = sub[0];
+      String id2 = sub[1];
+      return buildRenderTooltipButton(id1, id2, prov, dprov, context);
     default:
       return Container(height: 0);
   }
@@ -163,21 +206,6 @@ SnackBar buildMySnackBar(String t) {
     content: Text(
       t,
       style: bodyMedium.copyWith(color: Colors.white),
-    ),
-  );
-}
-
-Widget buildTooltipButton() {
-  return ElevatedButton(
-    onPressed: () {},
-    child: Text(
-      'Button x',
-      style: bodyMedium,
-    ),
-    style: ElevatedButton.styleFrom(
-      backgroundColor: Colors.white,
-      shape: RoundedRectangleBorder(
-          borderRadius: myRad, side: myBorder.borderSide),
     ),
   );
 }

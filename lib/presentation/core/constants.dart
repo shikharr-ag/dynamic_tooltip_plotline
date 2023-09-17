@@ -16,7 +16,8 @@ const String orderIdTextColor = 'Text Colour';
 const String orderIdBgColor = 'Background Style';
 const String orderIdCornerRadTooltipWidth = 'Corner Radius_Tooltip Width';
 const String orderIdArrowWidthAndWidth = 'Arrow Width_Arrow Height';
-const String orderIdRenderTooltip = 'Render Tooltip';
+const String orderIdRenderTooltipAndPreviousStyle =
+    'Render Tooltip_Fill Last Style';
 
 Map<String, String> tooltipParamsMap = {
   orderIdTargetElement: targetElementJsonKey,
@@ -39,5 +40,5 @@ final List<String> widgetBuildOrder = [
   orderIdBgColor,
   orderIdCornerRadTooltipWidth,
   orderIdArrowWidthAndWidth,
-  orderIdRenderTooltip,
+  orderIdRenderTooltipAndPreviousStyle,
 ];

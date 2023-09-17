@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
-enum TooltipDirection { down, up, left, right }
+enum TooltipDirection { down, up }
 
 class BubbleShape extends ShapeBorder {
   const BubbleShape({
@@ -140,52 +140,6 @@ class BubbleShape extends ShapeBorder {
           ..lineTo(rect.left, rect.top + topLeftRadius)
           ..arcToPoint(Offset(rect.left + topLeftRadius, rect.top),
               radius: Radius.circular(topLeftRadius), clockwise: true);
-
-      case TooltipDirection.left:
-        return getLeftTopPath(rect)
-          ..lineTo(
-              rect.right,
-              max(
-                  min(target.dy - arrowBaseWidth / 2,
-                      rect.bottom - bottomRightRadius - arrowBaseWidth),
-                  rect.top + topRightRadius))
-          ..lineTo(
-              target.dx - arrowTipDistance, target.dy) // right to arrow tip   \
-          //  left /
-          ..lineTo(
-              rect.right,
-              min(target.dy + arrowBaseWidth / 2,
-                  rect.bottom - bottomRightRadius))
-          ..lineTo(rect.right, rect.bottom - borderRadius)
-          ..arcToPoint(Offset(rect.right - bottomRightRadius, rect.bottom),
-              radius: Radius.circular(bottomRightRadius), clockwise: true)
-          ..lineTo(rect.left + bottomLeftRadius, rect.bottom)
-          ..arcToPoint(Offset(rect.left, rect.bottom - bottomLeftRadius),
-              radius: Radius.circular(bottomLeftRadius), clockwise: true);
-
-      case TooltipDirection.right:
-        return getBottomRightPath(rect)
-          ..lineTo(rect.left + topLeftRadius, rect.top)
-          ..arcToPoint(Offset(rect.left, rect.top + topLeftRadius),
-              radius: Radius.circular(topLeftRadius), clockwise: false)
-          ..lineTo(
-              rect.left,
-              max(
-                  min(target.dy - arrowBaseWidth / 2,
-                      rect.bottom - bottomLeftRadius - arrowBaseWidth),
-                  rect.top + topLeftRadius))
-
-          //left to arrow tip   /
-          ..lineTo(target.dx + arrowTipDistance, target.dy)
-
-          //  right \
-          ..lineTo(
-              rect.left,
-              min(target.dy + arrowBaseWidth / 2,
-                  rect.bottom - bottomLeftRadius))
-          ..lineTo(rect.left, rect.bottom - bottomLeftRadius)
-          ..arcToPoint(Offset(rect.left + bottomLeftRadius, rect.bottom),
-              radius: Radius.circular(bottomLeftRadius), clockwise: false);
 
       default:
         throw ArgumentError(preferredDirection);
