@@ -1,10 +1,13 @@
+import 'dart:developer';
 import 'dart:io';
 
-import 'package:dynamic_tooltip_plotline/application/tooltip/preview_page_provider.dart';
+import 'package:auto_size_text/auto_size_text.dart';
+import '../../application/tooltip/preview_page_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'bubble_shape.dart';
-import 'build_helper_widgets.dart';
+
 import 'style_elements.dart';
 
 DecorationImage _showUrlImage(PreviewPageProvider p) {
@@ -19,7 +22,7 @@ DecorationImage showImage(PreviewPageProvider p) {
 
 DecorationImage showError() {
   return const DecorationImage(
-    image: AssetImage('assets/Logo/dynamite.jpeg'),
+    image: AssetImage('assets/Icon/error.png'),
   );
 }
 
@@ -32,46 +35,77 @@ DecorationImage _showFileImage(PreviewPageProvider p) {
 }
 
 Widget _buildTooltipAndTarget(PreviewPageProvider p, String target,
-    {bool isBottom = false}) {
-  GlobalKey<TooltipState> k = p.getGlobalKeyForTooltip(target);
+    {bool isBottom = false,
+    bool isRight = false,
+    bool isLeft = false,
+    bool isCenter = false}) {
+  GlobalKey<TooltipState> k = p.getAndSetGlobalKeyForTooltip(target);
+  log('Target $target ... bot $isBottom R: $isRight L:$isLeft');
 
   ///This gives time for tooltip to get built and gets its state
   Future.delayed(const Duration(milliseconds: 100)).then((_) {
     p.showTooltipForKey(k);
   });
-  return Tooltip(
-      key: k,
-      message: p.getTooltipMessage(),
-      padding: EdgeInsets.symmetric(horizontal: p.getTooltipWidth()),
-      height: p.getTooltipPadding(),
-      verticalOffset: p.getTooltipVerticalOffset(),
-      margin: EdgeInsets.zero,
-      decoration: ShapeDecoration(
-        shape: BubbleShape(
-          preferredDirection: p.getToolDirection(isBottom),
-          target: p.getDynamicOffset(isBottom),
-          borderRadius: p.getBorderRadius(),
-          arrowBaseWidth: p.getArrowBaseWidth(),
-          arrowTipDistance: p.getArrowBaseHeight(),
-          borderColor: p.getTooltipColor() ?? borderColor,
-          borderWidth: 2,
+  return Consumer<PreviewPageProvider>(builder: (context, p, _) {
+    return Tooltip(
+        key: k,
+        richMessage: WidgetSpan(
+          alignment: PlaceholderAlignment.middle,
+          child: ConstrainedBox(
+            constraints: BoxConstraints.tightFor(
+                width: p.getCorrectedTooltipWidth(),
+                height: p.getTooltipHeight()),
+            child: AutoSizeText(
+              p.getTooltipMessage(),
+              maxLines: 2,
+              textAlign: TextAlign.center,
+              style: bodyMedium.copyWith(
+                color: p.getTextColor(),
+              ),
+            ),
+          ),
         ),
-        color: p.getTooltipColor(),
-        image: p.showTooltipImage()
-            ? p.errorInNetworkImage
-                ? showError()
-                : showImage(p)
-            : null,
-      ),
-      child: _buildTooltipButton(x: target));
+        padding: EdgeInsets.all(
+          p.getTooltipPadding(),
+        ),
+        verticalOffset: p.getTooltipVerticalOffset(),
+        margin:
+            p.getMargin(isRight: isRight, isCenter: isCenter, isLeft: isLeft),
+        decoration: ShapeDecoration(
+          shape: BubbleShape(
+            preferredDirection: p.getToolDirection(isBottom),
+            target: p.getDynamicOffset(isBottom,
+                isCenter: isCenter, isLeft: isLeft, isRight: isRight),
+            borderRadius: p.getBorderRadius(),
+            arrowBaseWidth: p.getArrowBaseWidth(),
+            arrowTipDistance: p.getArrowBaseHeight(),
+            borderColor: p.getTooltipColor() ?? borderColor,
+            borderWidth: 2,
+          ),
+          color: p.getTooltipColor(),
+          image: p.showTooltipImage()
+              ? p.errorInNetworkImage
+                  ? showError()
+                  : showImage(p)
+              : null,
+        ),
+        child: _buildTooltipButton(x: target));
+  });
 }
 
 Widget _buildDynamicButton(
     {required String x,
     required PreviewPageProvider prov,
-    bool isBottom = false}) {
+    bool isBottom = false,
+    bool isRight = false,
+    bool isLeft = false,
+    bool isCenter = false}) {
   return prov.getShowTooltip(x)
-      ? _buildTooltipAndTarget(prov, x, isBottom: isBottom)
+      ? _buildTooltipAndTarget(prov, x,
+          isBottom: isBottom,
+          isLeft: isLeft,
+          isCenter: isCenter,
+          isRight: isRight)
       : _buildTooltipButton(x: x);
 }
 
@@ -102,19 +136,26 @@ Widget buildMyRow({
           ? [
               const Spacer(),
               Expanded(
-                flex: 2,
-                child: _buildDynamicButton(prov: prov, x: buttonIndices[0]),
+                // flex: 2,
+                child: _buildDynamicButton(
+                    prov: prov, x: buttonIndices[0], isCenter: true),
               ),
               const Spacer(),
             ]
           : [
               Expanded(
                 child: _buildDynamicButton(
-                    prov: prov, x: buttonIndices[0], isBottom: isBottom),
+                    prov: prov,
+                    x: buttonIndices[0],
+                    isBottom: isBottom,
+                    isLeft: true),
               ),
               const Spacer(),
               Expanded(
                   child: _buildDynamicButton(
-                      prov: prov, x: buttonIndices[1], isBottom: isBottom))
+                      prov: prov,
+                      x: buttonIndices[1],
+                      isBottom: isBottom,
+                      isRight: true))
             ]);
 }

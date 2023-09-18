@@ -12,7 +12,6 @@ import '../../infrastructure/tooltip/shared_preferences_repository.dart';
 import '../core/build_helper_widgets.dart';
 import '../core/constants.dart';
 import '../core/helper.dart';
-import '../core/style_elements.dart';
 
 class DesignTooltipPage extends StatefulWidget {
   static const routeName = '/design';
@@ -55,23 +54,23 @@ class _DesignTooltipPageState extends State<DesignTooltipPage> {
     });
   }
 
-  void onPressedHandler(BuildContext context, GlobalKey<FormState> key) {
-    key.currentState!.validate();
-    if (prov.isFormComplete) {
-      //TODO: shared pref
-      log('${prov
-        ..styleFactors
-        ..setParams()}');
-      SharedPreferencesRepository().storeStyleFactors(prov.params);
-      log('${SharedPreferencesRepository().getStyleFactors()}');
-      // RouteNavigator.navigateReplacementWithFade(
-      //     routeName: PreviewTooltipPage.routeName, context: context);
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        buildMySnackBar('Please fill the form completely. :)'),
-      );
-    }
-  }
+  // void onPressedHandler(BuildContext context, GlobalKey<FormState> key) {
+  //   key.currentState!.validate();
+  //   if (prov.isFormComplete) {
+  //     //TODO: shared pref
+  //     log('${prov
+  //       ..styleFactors
+  //       ..setParams()}');
+  //     SharedPreferencesRepository().storeStyleFactors(prov.params);
+  //     log('${SharedPreferencesRepository().getStyleFactors()}');
+  //     // RouteNavigator.navigateReplacementWithFade(
+  //     //     routeName: PreviewTooltipPage.routeName, context: context);
+  //   } else {
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       buildMySnackBar('Please fill the form completely. :)'),
+  //     );
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -102,46 +101,27 @@ class _DesignTooltipPageState extends State<DesignTooltipPage> {
                 log('Bottom padding: $bottomPadding');
                 return dprov.isLoading
                     ? buildLoader()
-                    : Stack(
-                        children: [
-                          Align(
-                            alignment: Alignment.bottomCenter,
-                            child: Container(
-                              height: listViewWidgetHeight / 18,
-                              width: listViewWidth * 0.4,
-                              alignment: Alignment.centerRight,
-                              // color: Colors.yellow,
-                              child: Image.asset(
-                                'assets/gifs/arrow_nobg.gif',
-                                color: Colors.black,
-                                // scale: 2,
-                              ),
+                    : Padding(
+                        padding: EdgeInsets.fromLTRB(leftAndRightPadding,
+                            topPadding, leftAndRightPadding, bottomPadding),
+                        child: Container(
+                          // color: Colors.red[100],
+                          constraints: BoxConstraints.tightFor(
+                              height: double.infinity, width: listViewWidth),
+                          child: Form(
+                            key: formKey,
+                            child: ListView(
+                              children: (widgetBuildOrder.map((e) {
+                                return ConstrainedBox(
+                                    constraints: BoxConstraints.tightFor(
+                                        width: listViewWidth,
+                                        height: listViewWidgetHeight / 8.5),
+                                    child: getWidgetFromOrderId(
+                                        e, dprov, prov, context));
+                              }).toList()),
                             ),
                           ),
-                          Padding(
-                            padding: EdgeInsets.fromLTRB(leftAndRightPadding,
-                                topPadding, leftAndRightPadding, bottomPadding),
-                            child: Container(
-                              // color: Colors.red[100],
-                              constraints: BoxConstraints.tightFor(
-                                  height: double.infinity,
-                                  width: listViewWidth),
-                              child: Form(
-                                key: formKey,
-                                child: ListView(
-                                  children: (widgetBuildOrder.map((e) {
-                                    return ConstrainedBox(
-                                        constraints: BoxConstraints.tightFor(
-                                            width: listViewWidth,
-                                            height: listViewWidgetHeight / 8.5),
-                                        child: getWidgetFromOrderId(
-                                            e, dprov, prov, context));
-                                  }).toList()),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
+                        ),
                       );
               }));
             }),

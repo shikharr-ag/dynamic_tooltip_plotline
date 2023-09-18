@@ -14,5 +14,14 @@ class MyDouble extends ValueObject<double> {
     );
   }
 
+  static String getPrecisionDouble(String s) {
+    try {
+      double? x = double.tryParse(s);
+      return x!.toStringAsFixed(0);
+    } catch (er) {
+      return '';
+    }
+  }
+
   const MyDouble._(this.value);
 }

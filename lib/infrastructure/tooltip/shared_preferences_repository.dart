@@ -31,4 +31,15 @@ class SharedPreferencesRepository {
   bool checkIfDataExists() {
     return _sharedPreferences!.containsKey(previousStyleKey);
   }
+
+  ///If key is present then not first launch
+  bool isFirstLaunch() {
+    bool f = _sharedPreferences!.containsKey(firstLaunch);
+    if (f) {
+      return false;
+    } else {
+      _sharedPreferences!.setBool(firstLaunch, true);
+      return true;
+    }
+  }
 }

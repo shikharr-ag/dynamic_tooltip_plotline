@@ -18,10 +18,11 @@ class MyColoredTextbox extends StatefulWidget {
 }
 
 class _MyColoredTextboxState extends State<MyColoredTextbox> {
-  Color _defaultColor = Colors.white;
-  bool showText = true;
+  late Color _defaultColor;
+  // bool showText = true;
   late final FocusNode f;
   late DataProvider prov;
+  String hintText = '';
 
   Future<Color?> getColor() async {
     return await showDialog(
@@ -60,7 +61,14 @@ class _MyColoredTextboxState extends State<MyColoredTextbox> {
   void initialiseVariables() {
     f = FocusNode(debugLabel: widget.id);
 
-    _defaultColor = prov.getDefaultColor(widget.id);
+    Color? c = prov.getDefaultColor(widget.id);
+    if (c == null) {
+      _defaultColor = Colors.white;
+      hintText = 'Input';
+    } else {
+      _defaultColor = c;
+      hintText = '';
+    }
   }
 
   @override
@@ -95,25 +103,24 @@ class _MyColoredTextboxState extends State<MyColoredTextbox> {
                   borderRadius: BorderRadius.circular(6.0),
                 ),
                 alignment: Alignment.centerLeft,
-                child: showText
-                    ? const Text(
-                        'Input',
-                        style: bodySmall,
-                      )
-                    : null,
+                child: Text(
+                  hintText,
+                  style: bodySmall,
+                ),
               ),
             ),
             IconButton(
-              icon: Icon(Icons.edit),
+              icon: const Icon(Icons.edit),
               onPressed: () async {
                 f.requestFocus();
                 //This delay allows the keyboard animation to get over before calling the dialog
-                Future.delayed(Duration(milliseconds: 200)).then((value) async {
+                Future.delayed(const Duration(milliseconds: 100))
+                    .then((value) async {
                   Color? color = await getColor();
 
                   setState(() {
                     _defaultColor = color ?? Colors.white;
-                    showText = false;
+                    hintText = '';
                   });
 
                   log('Color picked: $color');

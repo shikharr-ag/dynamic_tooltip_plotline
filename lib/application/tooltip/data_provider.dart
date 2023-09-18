@@ -1,6 +1,8 @@
 import 'dart:developer';
 
 import 'package:dynamic_tooltip_plotline/domain/tooltip/background_style.dart';
+import 'package:dynamic_tooltip_plotline/domain/tooltip/convertor.dart';
+import 'package:dynamic_tooltip_plotline/domain/tooltip/my_double.dart';
 import 'package:dynamic_tooltip_plotline/infrastructure/tooltip/shared_preferences_repository.dart';
 import 'package:dynamic_tooltip_plotline/presentation/core/constants.dart';
 import 'package:dynamic_tooltip_plotline/presentation/core/helper.dart';
@@ -45,7 +47,7 @@ class DataProvider extends ChangeNotifier {
   int _dialogBgColorCode = 0;
   Color _dialogStateColor = Colors.black;
   bool _hasOldData = false;
-  GlobalKey<FormState> get formKey => _formKey;
+  bool _dialogError = true;
 
   //Getters
   ToolTipParams get params => _params;
@@ -68,6 +70,8 @@ class DataProvider extends ChangeNotifier {
   int get dialogBgColorCode => _dialogBgColorCode;
   Color get dialogStateColor => _dialogStateColor;
   bool get hasOldData => _hasOldData;
+  GlobalKey<FormState> get formKey => _formKey;
+  bool get dialogError => _dialogError;
 
   void checkHasOldData() {
     _hasOldData = SharedPreferencesRepository().checkIfDataExists();
@@ -76,19 +80,19 @@ class DataProvider extends ChangeNotifier {
 
   Object? getValFromParams(String val) {
     String key = Helper.getJsonKeyFromHeadline(val);
-    return _styleFactors[key];
+    return Convertor(jsonKey: key).getReadableString(_styleFactors);
   }
 
-  Color getDefaultColor(String val) {
-    Object? j = getValFromParams(val);
-    return j == null ? Colors.white : Color(int.parse(j.toString()));
+  Color? getDefaultColor(String val) {
+    String key = Helper.getJsonKeyFromHeadline(val);
+    return Convertor(jsonKey: key).getColor(_styleFactors);
   }
 
-  Color getBackgroundStyleColor(String val) {
-    Object? j = getValFromParams(val);
-    BackgroundStyle obj = BackgroundStyle().getObjectFromString(j.toString());
-    return obj.color ?? Colors.white;
-  }
+  // Color getBackgroundStyleColor(String val) {
+  //   Object? j = getValFromParams(val);
+  //   BackgroundStyle obj = BackgroundStyle().getObjectFromString(j.toString());
+  //   return obj.color ?? Colors.white;
+  // }
 
   void setDropdownValueFromState() {
     setTargetElementState(_params.targetElement, notify: false);
@@ -107,7 +111,7 @@ class DataProvider extends ChangeNotifier {
       val = int.parse(val.toString());
     }
     if (castToDouble) {
-      val = double.parse(val.toString());
+      val = double.tryParse(val.toString()) ?? 0;
       log('Type casted to double for $key');
     }
     _styleFactors.update(key, (_) => val, ifAbsent: () => val);
@@ -138,7 +142,7 @@ class DataProvider extends ChangeNotifier {
     return state;
   }
 
-  void setLogoUrl(String url) {
+  void setLogoUrl(String url, {bool convertToUrl = false}) {
     _logoUrl = url;
     _filePath = '';
     _previewImage = false;
@@ -264,14 +268,14 @@ class DataProvider extends ChangeNotifier {
   void overwriteTooltipParams() {
     Map<String, dynamic> f = SharedPreferencesRepository().getStyleFactors();
     _styleFactors = Helper.convertToUsableForm(f);
-    _params = ToolTipParams.fromJson(f);
+    _params = ToolTipParams.fromJson(_styleFactors);
+    _failure = const ValueFailure.none();
     notifyListeners();
   }
 
-  // /// Removes all items from the cart.
-  // void removeAll() {
-  //   _items.clear();
-  //   // This call tells the widgets that are listening to this model to rebuild.
-  //   notifyListeners();
-  // }
+  void setDialogError(bool f) {
+    log('Error dialog; $f');
+    _dialogError = f;
+    // notifyListeners();
+  }
 }

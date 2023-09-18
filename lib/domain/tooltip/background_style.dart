@@ -25,8 +25,10 @@ class BackgroundStyle {
   String genHintText(BackgroundStyle obj) {
     if (obj.color != null) {
       return '';
-    } else {
+    } else if (obj.src != null && obj.src!.isNotEmpty) {
       return 'Image selected.';
+    } else {
+      return 'Input';
     }
   }
 
@@ -50,5 +52,10 @@ class BackgroundStyle {
   ///Get file path
   String getFilePath(String src) {
     return src.substring(0, (src.length - "_FILE".length));
+  }
+
+  @override
+  String toString() {
+    return 'Color:${color.toString()} Src:$src isURL: $isUrl';
   }
 }

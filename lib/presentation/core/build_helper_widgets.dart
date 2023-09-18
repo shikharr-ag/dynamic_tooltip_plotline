@@ -202,7 +202,7 @@ Widget buildMyColorPicker(
 
 SnackBar buildMySnackBar(String t) {
   return SnackBar(
-    backgroundColor: Colors.red,
+    backgroundColor: errorColor,
     content: Text(
       t,
       style: bodyMedium.copyWith(color: Colors.white),

@@ -12,7 +12,6 @@ import 'my_textbox_template.dart';
 import '../../application/tooltip/data_provider.dart';
 import '../../domain/core/errors.dart';
 import '../../domain/tooltip/background_style.dart';
-import '../../domain/tooltip/my_color.dart';
 import '../../infrastructure/core/api_call_constants.dart';
 import 'build_helper_widgets.dart';
 import 'constants.dart';
@@ -46,7 +45,7 @@ class _BackgroundStyleBoxState extends State<BackgroundStyleBox>
     String? s = j?.toString();
     BackgroundStyle? obj =
         s == null ? null : BackgroundStyle().getObjectFromString(s);
-    _defaultColor = prov.getBackgroundStyleColor(widget.id);
+    _defaultColor = prov.getDefaultColor(widget.id)!;
     hintText = obj == null ? 'Input' : BackgroundStyle().genHintText(obj);
   }
 
@@ -75,13 +74,15 @@ class _BackgroundStyleBoxState extends State<BackgroundStyleBox>
       DataProvider prov, bool isGallery, bool isCustom, bool isLogo) {
     if (isGallery) {
       return TextButton(
-        child: Text('Pick from gallery'),
+        child: const Text('Pick from gallery'),
         onPressed: () {
           ImagePicker().pickImage(source: ImageSource.gallery).then((value) {
             log('Got $value');
             if (value == null) {
+              prov.setDialogError(true);
             } else {
               prov.setFilePath(value.path);
+              prov.setDialogError(false);
             }
           });
         },
@@ -97,7 +98,7 @@ class _BackgroundStyleBoxState extends State<BackgroundStyleBox>
     } else if (isCustom) {
       return MyTextboxTemplate(
         type: KeyboardType.alphabet,
-        id: '',
+        id: orderIdBgColor,
         onSubmit: (x) {
           prov.setLogoUrl(x);
         },
@@ -139,8 +140,8 @@ class _BackgroundStyleBoxState extends State<BackgroundStyleBox>
                           buildTextButton(doneIcon, 'Select Color', () {
                             prov.add(Helper.getJsonKeyFromHeadline(widget.id),
                                 color ?? Colors.black);
-                            Navigator.of(context)
-                                .pop(BackgroundStyle(color: color));
+                            Navigator.of(context).pop(
+                                BackgroundStyle(color: color ?? Colors.black));
                           }),
                         ],
                       ),
@@ -177,6 +178,7 @@ class _BackgroundStyleBoxState extends State<BackgroundStyleBox>
                                 () {
                                   prov.clearImage();
                                   prov.showImage();
+
                                   log('Current State: ${prov.backgroundStyleSourceState}');
                                 },
                               ),
@@ -200,7 +202,7 @@ class _BackgroundStyleBoxState extends State<BackgroundStyleBox>
                     ],
                   ),
                 ),
-                Divider(),
+                const Divider(),
                 Container(
                   width: double.infinity,
                   decoration: const ShapeDecoration(
@@ -245,13 +247,14 @@ class _BackgroundStyleBoxState extends State<BackgroundStyleBox>
                       loadingBuilder: (context, child, loadingProgress) =>
                           loadingProgress == null ? child : buildLoader(),
                       errorBuilder: (context, error, stackTrace) {
+                        prov.setDialogError(true);
                         return Center(
                           child: Text(ImageError(error).toString()),
                         );
                       },
                     )
-                  : Text('Some Error Occured.Retry.')
-          : Text('Image will be previewed here..'),
+                  : const Text('Some Error Occured.Retry.')
+          : const Text('Image will be previewed here..'),
     );
   }
 
@@ -290,7 +293,7 @@ class _BackgroundStyleBoxState extends State<BackgroundStyleBox>
                     return buildBackgroundStyleDialog(
                         height2, width2, color, context);
                   });
-
+              log('Object BgSrc: ${obj.toString()}');
               setState(() {
                 hintText =
                     obj == null ? 'Input' : BackgroundStyle().genHintText(obj);

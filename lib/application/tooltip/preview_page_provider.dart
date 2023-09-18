@@ -1,9 +1,8 @@
 import 'dart:developer';
 
-import 'package:dynamic_tooltip_plotline/domain/tooltip/background_style.dart';
-import 'package:dynamic_tooltip_plotline/domain/tooltip/tooltip_params.dart';
-import 'package:dynamic_tooltip_plotline/presentation/core/bubble_shape.dart';
-import 'package:flutter/foundation.dart';
+import '../../domain/tooltip/background_style.dart';
+import '../../domain/tooltip/tooltip_params.dart';
+import '../../presentation/core/bubble_shape.dart';
 import 'package:flutter/material.dart';
 
 import '../../presentation/core/style_elements.dart';
@@ -13,11 +12,11 @@ class PreviewPageProvider extends ChangeNotifier {
 
   ToolTipParams _params = ToolTipParams.fromJson({});
   BoxConstraints _pageConstraints = BoxConstraints();
-
+  GlobalKey<TooltipState>? _key;
   //Getters
   bool get errorInNetworkImage => _errorInNetworkImage;
   ToolTipParams get params => _params;
-
+  GlobalKey<TooltipState>? get key => _key;
   void setPageConstraints(BoxConstraints c) {
     _pageConstraints = c;
   }
@@ -38,6 +37,14 @@ class PreviewPageProvider extends ChangeNotifier {
     _params = p;
   }
 
+  double getTooltipHeight() {
+    return 32;
+  }
+
+  double _getMaxWidth() {
+    return _pageConstraints.maxWidth;
+  }
+
   double getHorizontalPadding() {
     return _pageConstraints.maxWidth * horizontalPaddingFactor;
   }
@@ -50,7 +57,7 @@ class PreviewPageProvider extends ChangeNotifier {
     return _pageConstraints.maxHeight * 0.38;
   }
 
-  double getMaxWidth() {
+  double getPaddedWidth() {
     return _pageConstraints.maxWidth - (2 * getHorizontalPadding());
   }
 
@@ -66,20 +73,68 @@ class PreviewPageProvider extends ChangeNotifier {
     key.currentState!.ensureTooltipVisible();
   }
 
-  Offset getDynamicOffset(bool isBottom) {
+  double _getTooltipMarginOffset() {
+    return 10.0;
+  }
+
+  double _getMargin() {
+    return _checkTooltipWidthOverflow()
+        ? _getTooltipMarginOffset()
+        : _calcMargin();
+  }
+
+  bool _checkTooltipWidthOverflow() {
+    return _calcMargin() < _getTooltipMarginOffset() ? true : false;
+  }
+
+  double _calcMargin() {
+    return _getMaxWidth() - (_getTooltipWidth() + _getTooltipMarginOffset());
+  }
+
+  EdgeInsetsGeometry getMargin(
+      {bool isLeft = false, bool isRight = false, bool isCenter = false}) {
+    log('Tooltip Width: ${_getTooltipWidth()}  Margin computed Width: ${(_getMaxWidth() - _getTooltipWidth() - _getTooltipMarginOffset())}');
+    log('Max width: ${_getMaxWidth()}');
+
+    return isCenter
+        ? EdgeInsets.only(right: _getMargin() / 2, left: _getMargin() / 2)
+        : isLeft
+            ? EdgeInsets.only(
+                right: _getMargin(), left: _getTooltipMarginOffset())
+            : EdgeInsets.only(
+                left: _getMargin(), right: _getTooltipMarginOffset());
+  }
+
+  double _getHorizontalOffset(
+      {bool isCenter = false, bool isLeft = false, bool isRight = false}) {
+    return isCenter
+        ? _getMaxWidth() / 2
+        : isRight
+            ? ((_getMargin() +
+                    getCorrectedTooltipWidth() +
+                    _getTooltipMarginOffset()) -
+                (getPaddedWidth() / 6 + getHorizontalPadding()))
+            : ((getPaddedWidth() / 6 + getHorizontalPadding()));
+  }
+
+  double _getVerticalOffset(bool isBottom) {
+    return isBottom
+        ? (getTooltipHeight() +
+            getArrowBaseHeight() *
+                ((getTooltipHeight() + getArrowBaseHeight()) /
+                    getArrowBaseHeight()) +
+            getTooltipVerticalOffset())
+        : -(_tooltipOffsetHeight());
+  }
+
+  Offset getDynamicOffset(bool isBottom,
+      {bool isCenter = false, bool isLeft = false, bool isRight = false}) {
+    //Sets the arrow target to middle of the button
+    //width of each button is paddedWidth / 3 and this targets its center
     Offset f = Offset(
-        getArrowBaseWidth() + getTooltipWidth()
-        // getTooltipWidth() + getArrowBaseWidth()
-        ,
-        isBottom
-            ? (getTooltipPadding() +
-                    getTooltipVerticalOffset() -
-                    getArrowBaseHeight()) -
-                5
-            // (_tooltipOffsetHeight() +
-            //     getTooltipVerticalOffset() +
-            //     getArrowBaseHeight())
-            : -(_tooltipOffsetHeight()));
+        _getHorizontalOffset(
+            isCenter: isCenter, isLeft: isLeft, isRight: isRight),
+        _getVerticalOffset(isBottom));
     return f;
   }
 
@@ -87,7 +142,13 @@ class PreviewPageProvider extends ChangeNotifier {
     return _params.padding;
   }
 
-  double getTooltipWidth() {
+  double getCorrectedTooltipWidth() {
+    return _checkTooltipWidthOverflow()
+        ? _getMaxWidth() - _getTooltipMarginOffset()
+        : _getTooltipWidth();
+  }
+
+  double _getTooltipWidth() {
     return _params.tooltipWidth;
   }
 
@@ -97,6 +158,10 @@ class PreviewPageProvider extends ChangeNotifier {
 
   double getTooltipMarginLeft(double width) {
     return (width / 3) / 3;
+  }
+
+  Color getTextColor() {
+    return Color(_params.textColorCode);
   }
 
   double getBorderRadius() {
@@ -139,7 +204,7 @@ class PreviewPageProvider extends ChangeNotifier {
     return _params.targetElement;
   }
 
-  GlobalKey<TooltipState> getGlobalKeyForTooltip(String x) {
-    return GlobalKey<TooltipState>(debugLabel: x);
+  GlobalKey<TooltipState> getAndSetGlobalKeyForTooltip(String x) {
+    return _key = GlobalKey<TooltipState>(debugLabel: x);
   }
 }

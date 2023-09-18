@@ -69,10 +69,11 @@ class BubbleShape extends ShapeBorder {
         clockwise: false,
       );
 
-    topLeftRadius = borderRadius;
-    topRightRadius = borderRadius;
-    bottomLeftRadius = borderRadius;
-    bottomRightRadius = borderRadius;
+    ///Limits border radius to 25 max
+    topLeftRadius = min(borderRadius, 25);
+    topRightRadius = min(borderRadius, 25);
+    bottomLeftRadius = min(borderRadius, 25);
+    bottomRightRadius = min(borderRadius, 25);
 
     switch (preferredDirection) {
       case TooltipDirection.down:

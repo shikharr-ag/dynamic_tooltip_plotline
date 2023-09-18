@@ -64,10 +64,23 @@ class _MyTextboxTemplateState extends State<MyTextboxTemplate> {
     f.addListener(() {
       // log('Focus changed :${f.debugLabel} ${f.hasFocus}');
       if (!f.hasFocus) {
-        addKVToState();
+        validateAndProcessValue(ctrl.text);
       }
     });
     super.initState();
+  }
+
+  void validateAndProcessValue(String val) {
+    if (widget.type == KeyboardType.numeral) {
+      MyDouble d = MyDouble(val);
+
+      d.value.fold((l) {
+        ctrl.text = '0';
+        prov.updateValueFailure(l);
+      }, (r) => addKVToState());
+    } else {
+      addKVToState();
+    }
   }
 
   @override
@@ -115,16 +128,7 @@ class _MyTextboxTemplateState extends State<MyTextboxTemplate> {
           },
           onFieldSubmitted: widget.onSubmit == null
               ? (val) {
-                  if (widget.type != KeyboardType.alphabet) {
-                    MyDouble d = MyDouble(val);
-
-                    d.value.fold((l) {
-                      // log('Error :$l');
-                      prov.updateValueFailure(l);
-                    }, (r) => addKVToState());
-                  } else {
-                    addKVToState();
-                  }
+                  validateAndProcessValue(val);
                 }
               : (val) {
                   widget.onSubmit!(val);
