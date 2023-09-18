@@ -1,4 +1,5 @@
 # DYNAMYTIP
+![splash2](https://github.com/shikharr-ag/dynamic_tooltip_plotline/assets/52531507/bc5552cc-4e51-423a-8e43-0ac624cc2f2b)
 
 
 # THE ONBOARDING
