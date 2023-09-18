@@ -3,13 +3,9 @@
 
 # THE ONBOARDING
 
+![screenshot_1](https://github.com/shikharr-ag/dynamic_tooltip_plotline/assets/52531507/97203aad-5956-430f-bdba-4822d8b9a6a9)
 
-![screenshot_1](https://github.com/shikharr-ag/dynamic_tooltip_plotline/assets/52531507/9a56918c-09ad-47bd-9761-152a149ebc9f)
-![screenshot_2](https://github.com/shikharr-ag/dynamic_tooltip_plotline/assets/52531507/02547ee2-3059-418d-a4d0-194252037fa0)
-![screenshot_3](https://github.com/shikharr-ag/dynamic_tooltip_plotline/assets/52531507/352f5737-d0c7-4fad-ae44-a36cb2a12f5e)
-![screenshot_4](https://github.com/shikharr-ag/dynamic_tooltip_plotline/assets/52531507/ab6b8fc4-c2f8-4dcc-8a89-26aa8e8aa0e3)
-![screenshot_5](https://github.com/shikharr-ag/dynamic_tooltip_plotline/assets/52531507/2c711cca-24b1-44ea-9949-e53c0b2ce33d)
-![screenshot_6](https://github.com/shikharr-ag/dynamic_tooltip_plotline/assets/52531507/401f578a-a197-4264-a316-386413a97e25)
+
 
 
 
