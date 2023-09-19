@@ -54,7 +54,7 @@ DynamyTip simplifies the process of tooltip design, making it accessible to both
 # 2. Getting Started
 
 # Installation
-To use DynamyTip, download and install it from the Google Drive Link <Insert Link>.
+To use DynamyTip, download and install it from the Diawi webapp : https://i.diawi.com/csveHo
 
 # App Overview
 Upon launching DynamyTip, you'll find a user-friendly interface that allows you to configure tooltips quickly.
