@@ -111,7 +111,9 @@ class _MyColoredTextboxState extends State<MyColoredTextbox> {
               ),
             ),
             IconButton(
+              padding: EdgeInsets.zero,
               icon: const Icon(Icons.edit),
+              alignment: Alignment.center,
               onPressed: () async {
                 f.requestFocus();
                 //This delay allows the keyboard animation to get over before calling the dialog

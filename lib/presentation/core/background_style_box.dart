@@ -293,6 +293,8 @@ class _BackgroundStyleBoxState extends State<BackgroundStyleBox>
           ),
           IconButton(
             icon: const Icon(Icons.edit),
+            alignment: Alignment.center,
+            padding: EdgeInsets.zero,
             onPressed: () async {
               BackgroundStyle? obj = await showDialog(
                   context: context,

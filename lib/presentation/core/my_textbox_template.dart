@@ -43,6 +43,8 @@ class _MyTextboxTemplateState extends State<MyTextboxTemplate> {
 
   void addKVToState() {
     if (widget.type == KeyboardType.alphabet) {
+      prov.add(Helper.getJsonKeyFromHeadline(widget.id), ctrl.text,
+          castToDouble: widget.type == KeyboardType.numeral ? true : false);
     } else {
       if (ctrl.text.isNotEmpty) {
         prov.add(Helper.getJsonKeyFromHeadline(widget.id), ctrl.text,

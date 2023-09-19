@@ -12,6 +12,7 @@ import 'style_elements.dart';
 
 DecorationImage _showUrlImage(PreviewPageProvider p) {
   return DecorationImage(
+      fit: BoxFit.fill,
       image: NetworkImage(p.getImageUrl()!),
       onError: (exception, stackTrace) => p.setErrorForNetworkImage());
 }
@@ -22,12 +23,14 @@ DecorationImage showImage(PreviewPageProvider p) {
 
 DecorationImage showError() {
   return const DecorationImage(
+    fit: BoxFit.fill,
     image: AssetImage('assets/Icon/error.png'),
   );
 }
 
 DecorationImage _showFileImage(PreviewPageProvider p) {
   return DecorationImage(
+    fit: BoxFit.fill,
     image: FileImage(
       File(p.getFilePath()!),
     ),
@@ -46,8 +49,9 @@ Widget _buildTooltipAndTarget(PreviewPageProvider p, String target,
         key: p.key,
         richMessage: WidgetSpan(
           alignment: PlaceholderAlignment.middle,
-          child: ConstrainedBox(
+          child: Container(
             key: p.constraintsKey,
+            decoration: BoxDecoration(),
             constraints: BoxConstraints(
               maxWidth: p.getCorrectedTooltipWidth(),
               minWidth: p.getCorrectedTooltipWidth(),
@@ -72,6 +76,11 @@ Widget _buildTooltipAndTarget(PreviewPageProvider p, String target,
         margin:
             p.getMargin(isRight: isRight, isCenter: isCenter, isLeft: isLeft),
         decoration: ShapeDecoration(
+          image: p.showTooltipImage()
+              ? p.errorInNetworkImage
+                  ? showError()
+                  : showImage(p)
+              : null,
           shape: BubbleShape(
             preferredDirection: p.getToolDirection(isBottom),
             target: p.getDynamicOffset(isBottom,
@@ -83,11 +92,6 @@ Widget _buildTooltipAndTarget(PreviewPageProvider p, String target,
             borderWidth: 2,
           ),
           color: p.getTooltipColor(),
-          image: p.showTooltipImage()
-              ? p.errorInNetworkImage
-                  ? showError()
-                  : showImage(p)
-              : null,
         ),
         child: _buildTooltipButton(x: target));
   });

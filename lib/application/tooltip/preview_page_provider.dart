@@ -136,11 +136,14 @@ class PreviewPageProvider extends ChangeNotifier {
   }
 
   double _getVerticalOffset(bool isBottom) {
+    //Factor of 1.789 calculated from trial
     return isBottom
         ? (_runtimeHeight +
-            getArrowBaseHeight() *
-                ((_getRuntimeHeightOrDefault() + getArrowBaseHeight()) /
-                    getArrowBaseHeight()) +
+            getArrowBaseHeight() * 1.789
+            // ((_getRuntimeHeightOrDefault() + getArrowBaseHeight()) /
+            //     // getArrowBaseHeight()
+            //     _getRuntimeHeightOrDefault())
+            +
             getTooltipVerticalOffset())
         : -(_tooltipOffsetHeight());
   }

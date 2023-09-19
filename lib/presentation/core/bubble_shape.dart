@@ -139,7 +139,7 @@ class BubbleShape extends ShapeBorder {
           ..arcToPoint(Offset(rect.left, rect.bottom - bottomLeftRadius),
               radius: Radius.circular(bottomLeftRadius), clockwise: true)
           ..lineTo(rect.left, rect.top + topLeftRadius)
-          ..arcToPoint(Offset(rect.left + topLeftRadius, rect.top),
+          ..arcToPoint(Offset(rect.left, rect.top + topLeftRadius),
               radius: Radius.circular(topLeftRadius), clockwise: true);
 
       default:
