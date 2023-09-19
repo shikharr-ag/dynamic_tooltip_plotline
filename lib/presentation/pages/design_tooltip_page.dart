@@ -54,24 +54,6 @@ class _DesignTooltipPageState extends State<DesignTooltipPage> {
     });
   }
 
-  // void onPressedHandler(BuildContext context, GlobalKey<FormState> key) {
-  //   key.currentState!.validate();
-  //   if (prov.isFormComplete) {
-  //     //TODO: shared pref
-  //     log('${prov
-  //       ..styleFactors
-  //       ..setParams()}');
-  //     SharedPreferencesRepository().storeStyleFactors(prov.params);
-  //     log('${SharedPreferencesRepository().getStyleFactors()}');
-  //     // RouteNavigator.navigateReplacementWithFade(
-  //     //     routeName: PreviewTooltipPage.routeName, context: context);
-  //   } else {
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       buildMySnackBar('Please fill the form completely. :)'),
-  //     );
-  //   }
-  // }
-
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
@@ -88,9 +70,7 @@ class _DesignTooltipPageState extends State<DesignTooltipPage> {
             child: Consumer<DesignPageProvider>(builder: (context, dprov, _) {
               return LayoutBuilder(builder: ((context, constraints) {
                 dprov.setConstraints(constraints);
-                // log('Insets: ${MediaQuery.of(context).viewInsets} \t Padding: ${MediaQuery.of(context).viewPadding}');
-                // log('MaxHeight: ${constraints.maxHeight}');
-                // log('MediaQuery Height: ${MediaQuery.of(context).size.height}');
+
                 var topPadding = dprov.getTopPadding();
                 var bottomPadding = dprov.getBottomPadding();
 

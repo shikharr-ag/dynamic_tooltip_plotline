@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'my_double.dart';
 import 'tooltip_params.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +12,7 @@ class Convertor {
     required this.jsonKey,
   });
 
-  String getReadableString(Map<String, Object> map) {
+  String getReadableString(Map<String, Object> map, {bool isUrl = false}) {
     Object? j = map[jsonKey];
     if (j != null) {
       if (jsonKey == arrowWidthJsonKey ||
@@ -23,6 +25,10 @@ class Convertor {
       } else if (jsonKey == tooltipTextJsonKey ||
           jsonKey == targetElementJsonKey ||
           jsonKey == bgSrcJsonKey) {
+        if (jsonKey == bgSrcJsonKey) {
+          log('Bg OBJ : $j ... isURL:$isUrl');
+          return BackgroundStyle.getCorrectSrc(j.toString(), isUrl: isUrl);
+        }
         return j.toString();
       } else {
         return j.toString();

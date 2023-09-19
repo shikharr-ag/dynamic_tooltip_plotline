@@ -39,32 +39,32 @@ Widget _buildTooltipAndTarget(PreviewPageProvider p, String target,
     bool isRight = false,
     bool isLeft = false,
     bool isCenter = false}) {
-  GlobalKey<TooltipState> k = p.getAndSetGlobalKeyForTooltip(target);
-  log('Target $target ... bot $isBottom R: $isRight L:$isLeft');
+  // log('Target $target ... bot $isBottom R: $isRight L:$isLeft');
 
-  ///This gives time for tooltip to get built and gets its state
-  Future.delayed(const Duration(milliseconds: 100)).then((_) {
-    p.showTooltipForKey(k);
-  });
   return Consumer<PreviewPageProvider>(builder: (context, p, _) {
     return Tooltip(
-        key: k,
+        key: p.key,
         richMessage: WidgetSpan(
           alignment: PlaceholderAlignment.middle,
           child: ConstrainedBox(
-            constraints: BoxConstraints.tightFor(
-                width: p.getCorrectedTooltipWidth(),
-                height: p.getTooltipHeight()),
+            key: p.constraintsKey,
+            constraints: BoxConstraints(
+              maxWidth: p.getCorrectedTooltipWidth(),
+              minWidth: p.getCorrectedTooltipWidth(),
+              minHeight: p.getTooltipHeight(),
+            ),
             child: AutoSizeText(
               p.getTooltipMessage(),
               maxLines: 2,
               textAlign: TextAlign.center,
               style: bodyMedium.copyWith(
                 color: p.getTextColor(),
+                fontSize: p.getTextSize(),
               ),
             ),
           ),
         ),
+        triggerMode: TooltipTriggerMode.manual,
         padding: EdgeInsets.all(
           p.getTooltipPadding(),
         ),

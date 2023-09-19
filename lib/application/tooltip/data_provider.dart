@@ -78,9 +78,10 @@ class DataProvider extends ChangeNotifier {
     // notifyListeners();
   }
 
-  Object? getValFromParams(String val) {
+  Object? getValFromParams(String val, {bool isUrl = false}) {
     String key = Helper.getJsonKeyFromHeadline(val);
-    return Convertor(jsonKey: key).getReadableString(_styleFactors);
+    return Convertor(jsonKey: key)
+        .getReadableString(_styleFactors, isUrl: isUrl);
   }
 
   Color? getDefaultColor(String val) {
@@ -161,6 +162,7 @@ class DataProvider extends ChangeNotifier {
   ///Used to set the domain in state
   void setBackgroundStyleDomainSet(String s) {
     _backgroundStyleDomainState = s;
+    _setNoErrorState();
     notifyListeners();
   }
 
@@ -259,10 +261,17 @@ class DataProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setParams() {
-    log('Style: $_styleFactors');
-    _params = ToolTipParams.fromJson(_styleFactors);
-    log('Params: $_params');
+  bool setParams() {
+    try {
+      log('Style: $_styleFactors');
+      _params = ToolTipParams.fromJson(_styleFactors);
+      log('Params: $_params');
+      return true;
+    } catch (er) {
+      _failure = ValueFailure.incompleteForm();
+      notifyListeners();
+      return false;
+    }
   }
 
   void overwriteTooltipParams() {

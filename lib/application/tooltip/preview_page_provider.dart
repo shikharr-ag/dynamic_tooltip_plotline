@@ -13,17 +13,21 @@ class PreviewPageProvider extends ChangeNotifier {
   ToolTipParams _params = ToolTipParams.fromJson({});
   BoxConstraints _pageConstraints = BoxConstraints();
   GlobalKey<TooltipState>? _key;
+  double _runtimeHeight = 0;
+  final GlobalKey? _constraintsKey = GlobalKey(debugLabel: 'Constraints');
   //Getters
   bool get errorInNetworkImage => _errorInNetworkImage;
   ToolTipParams get params => _params;
   GlobalKey<TooltipState>? get key => _key;
+  GlobalKey? get constraintsKey => _constraintsKey;
+
   void setPageConstraints(BoxConstraints c) {
     _pageConstraints = c;
   }
 
   bool getShowTooltip(String x) {
-    log('$x  ${_params.targetElement}');
-    log('Get tooltip for ${x == _params.targetElement}');
+    // log('$x  ${_params.targetElement}');
+    // log('Get tooltip for ${x == _params.targetElement}');
     return x == _params.targetElement;
   }
 
@@ -32,13 +36,23 @@ class PreviewPageProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Size getCurrentConstraints() {
+    return _constraintsKey!.currentContext!.size!;
+  }
+
   void setParamState(ToolTipParams p) {
-    log('Set params: $p');
+    // log('Set params: $p');
     _params = p;
   }
 
   double getTooltipHeight() {
-    return 32;
+    return 16;
+  }
+
+  void setRuntimeHeight(double h) {
+    _runtimeHeight = h;
+    log('Runtime Height: $h');
+    notifyListeners();
   }
 
   double _getMaxWidth() {
@@ -93,8 +107,8 @@ class PreviewPageProvider extends ChangeNotifier {
 
   EdgeInsetsGeometry getMargin(
       {bool isLeft = false, bool isRight = false, bool isCenter = false}) {
-    log('Tooltip Width: ${_getTooltipWidth()}  Margin computed Width: ${(_getMaxWidth() - _getTooltipWidth() - _getTooltipMarginOffset())}');
-    log('Max width: ${_getMaxWidth()}');
+    // log('Tooltip Width: ${_getTooltipWidth()}  Margin computed Width: ${(_getMaxWidth() - _getTooltipWidth() - _getTooltipMarginOffset())}');
+    // log('Max width: ${_getMaxWidth()}');
 
     return isCenter
         ? EdgeInsets.only(right: _getMargin() / 2, left: _getMargin() / 2)
@@ -117,11 +131,15 @@ class PreviewPageProvider extends ChangeNotifier {
             : ((getPaddedWidth() / 6 + getHorizontalPadding()));
   }
 
+  double _getRuntimeHeightOrDefault() {
+    return _runtimeHeight == 0 ? getTooltipHeight() : _runtimeHeight;
+  }
+
   double _getVerticalOffset(bool isBottom) {
     return isBottom
-        ? (getTooltipHeight() +
+        ? (_runtimeHeight +
             getArrowBaseHeight() *
-                ((getTooltipHeight() + getArrowBaseHeight()) /
+                ((_getRuntimeHeightOrDefault() + getArrowBaseHeight()) /
                     getArrowBaseHeight()) +
             getTooltipVerticalOffset())
         : -(_tooltipOffsetHeight());
@@ -206,5 +224,9 @@ class PreviewPageProvider extends ChangeNotifier {
 
   GlobalKey<TooltipState> getAndSetGlobalKeyForTooltip(String x) {
     return _key = GlobalKey<TooltipState>(debugLabel: x);
+  }
+
+  double getTextSize() {
+    return _params.textSize;
   }
 }

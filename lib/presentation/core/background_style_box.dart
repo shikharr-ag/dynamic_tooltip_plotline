@@ -49,6 +49,15 @@ class _BackgroundStyleBoxState extends State<BackgroundStyleBox>
     hintText = obj == null ? 'Input' : BackgroundStyle().genHintText(obj);
   }
 
+  BackgroundStyle? tryGetValueFromState() {
+    Object? j = prov.getValFromParams(widget.id);
+    String? s = j?.toString();
+    BackgroundStyle? obj =
+        s == null ? null : BackgroundStyle().getObjectFromString(s);
+    log('got from state : ${obj.toString()}');
+    return obj;
+  }
+
   @override
   void initState() {
     initialiseVariables();
@@ -98,6 +107,7 @@ class _BackgroundStyleBoxState extends State<BackgroundStyleBox>
     } else if (isCustom) {
       return MyTextboxTemplate(
         type: KeyboardType.alphabet,
+        isUrl: true,
         id: orderIdBgColor,
         onSubmit: (x) {
           prov.setLogoUrl(x);
@@ -156,7 +166,6 @@ class _BackgroundStyleBoxState extends State<BackgroundStyleBox>
                                     .backgroundStyleSourceAndHeadlines.keys
                                     .toList(),
                                 updateBackgroundStyleSourceState: true,
-                                // updateSource: (x) => prov.setSource(x),
                               ),
                             ),
                           ),
@@ -294,6 +303,7 @@ class _BackgroundStyleBoxState extends State<BackgroundStyleBox>
                         height2, width2, color, context);
                   });
               log('Object BgSrc: ${obj.toString()}');
+              obj ??= tryGetValueFromState();
               setState(() {
                 hintText =
                     obj == null ? 'Input' : BackgroundStyle().genHintText(obj);

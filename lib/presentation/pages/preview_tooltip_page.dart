@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import '../../application/tooltip/preview_page_provider.dart';
 import '../core/route_navigator.dart';
 import '../core/style_elements.dart';
@@ -25,20 +27,31 @@ class PreviewTooltipPage extends StatefulWidget {
 }
 
 class _PreviewTooltipPageState extends State<PreviewTooltipPage> {
-  GlobalKey<TooltipState> key = GlobalKey();
-  GlobalKey<TooltipState> key2 = GlobalKey();
+  late GlobalKey<TooltipState> k;
+
   late PreviewPageProvider prov;
   @override
   void initState() {
     super.initState();
     prov = Provider.of<PreviewPageProvider>(context, listen: false);
+    k = prov.getAndSetGlobalKeyForTooltip('tooltip');
     prov.setParamState(
         Provider.of<DataProvider>(context, listen: false).params);
-    SchedulerBinding.instance.addPostFrameCallback((timeStamp) {});
-  }
+    SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
+      ///This gives time for tooltip to get built and gets its state
 
-  double getTooltipLeftMargin(double width) {
-    return (width / 3) / 3;
+      Future.delayed(const Duration(milliseconds: 40)).then((_) {
+        prov.showTooltipForKey(k);
+
+        ///This allows us to get dynamic height of the tooltip
+        Future.delayed(const Duration(milliseconds: 12)).then((value) {
+          prov.setRuntimeHeight(prov.getCurrentConstraints().height);
+        });
+      });
+      // Future.delayed(Duration(milliseconds: 150), () {
+
+      // });
+    });
   }
 
   @override
@@ -46,7 +59,11 @@ class _PreviewTooltipPageState extends State<PreviewTooltipPage> {
     // key.currentState!.ensureTooltipVisible();
     return GestureDetector(
       onTap: () {
-        prov.showTooltipForKey(prov.key!);
+        log(prov.key!.currentState!.ensureTooltipVisible().toString());
+      },
+      onLongPress: () {
+        log('Long press');
+        log(prov.key!.currentState!.ensureTooltipVisible().toString());
       },
       child: Scaffold(
           appBar: AppBar(
@@ -72,20 +89,6 @@ class _PreviewTooltipPageState extends State<PreviewTooltipPage> {
               var totalWidgetHeight = prov.getTotalWidgetHeight();
               var totalWidgetWidth = prov.getPaddedWidth();
 
-              // double tooltipMarginLeft = getTooltipLeftMargin(totalWidgetWidth);
-              // TooltipDirection dir = TooltipDirection.down;
-
-              // double arrowBaseWidth = 40;
-              // tooltipVerticalOffset * 0.4;
-              // double arrowBaseHeight = 10;
-
-              // double tooltipOffsetHeight = arrowBaseHeight * 2;
-              // double tooltipVerticalOffset = arrowBaseHeight + 25;
-              // Offset tooltip = Offset(
-              //     tooltipMarginLeft + arrowBaseWidth, -tooltipOffsetHeight);
-              // Offset(tooltipMarginLeft + 20, -tooltipVerticalOffset * 0.8);
-              // double borderRadius = 8;
-              // double padding = 15.0;
               return Padding(
                 padding: EdgeInsets.fromLTRB(horizontalPadding, verticalPadding,
                     horizontalPadding, verticalPadding),

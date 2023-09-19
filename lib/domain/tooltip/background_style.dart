@@ -49,6 +49,14 @@ class BackgroundStyle {
     return BackgroundStyle(color: c, isUrl: url, src: s);
   }
 
+  static String getCorrectSrc(String s, {required bool isUrl}) {
+    if (s.endsWith("_COLOR") || s.endsWith("_FILE")) {
+      return isUrl ? '' : s;
+    } else {
+      return s;
+    }
+  }
+
   ///Get file path
   String getFilePath(String src) {
     return src.substring(0, (src.length - "_FILE".length));

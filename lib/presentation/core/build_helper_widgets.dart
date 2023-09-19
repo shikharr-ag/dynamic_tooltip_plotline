@@ -1,25 +1,20 @@
-import 'dart:developer';
-
-import 'package:dynamic_tooltip_plotline/application/tooltip/design_page_provider.dart';
-import 'package:dynamic_tooltip_plotline/domain/core/failures.dart';
-import 'package:dynamic_tooltip_plotline/presentation/core/background_style_box.dart';
-import 'package:dynamic_tooltip_plotline/presentation/core/my_textbox_template.dart';
-import 'package:dynamic_tooltip_plotline/presentation/core/style_elements.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
-import 'package:provider/provider.dart';
 
 import '../../application/tooltip/data_provider.dart';
+import '../../application/tooltip/design_page_provider.dart';
+import '../../domain/core/failures.dart';
 import '../../infrastructure/tooltip/shared_preferences_repository.dart';
 import '../pages/preview_tooltip_page.dart';
+import 'background_style_box.dart';
+import 'column_child.dart';
+import 'constants.dart';
 import 'helper.dart';
 import 'my_colored_textbox.dart';
 import 'my_dropdown.dart';
-
-import 'column_child.dart';
-import 'package:flutter/material.dart';
-
-import 'constants.dart';
+import 'my_textbox_template.dart';
 import 'route_navigator.dart';
+import 'style_elements.dart';
 
 Widget buildTargetElement(String id, double w) {
   return ColumnChild(
@@ -85,14 +80,12 @@ Widget buildRenderTooltipButton(String id1, String id2, DataProvider prov,
             // dprov.setLoading();
             prov.formKey.currentState!.validate();
             if (prov.isFormComplete) {
-              //TODO: shared pref
-              log('${prov
-                ..styleFactors
-                ..setParams()}');
-              SharedPreferencesRepository().storeStyleFactors(prov.params);
-              // log('${SharedPreferencesRepository().getStyleFactors()}');
-              RouteNavigator.navigateReplacementWithFade(
-                  routeName: PreviewTooltipPage.routeName, context: context);
+              if (prov.setParams()) {
+                SharedPreferencesRepository().storeStyleFactors(prov.params);
+
+                RouteNavigator.navigateReplacementWithFade(
+                    routeName: PreviewTooltipPage.routeName, context: context);
+              }
             } else {
               prov.updateValueFailure(const ValueFailure.incompleteForm());
             }

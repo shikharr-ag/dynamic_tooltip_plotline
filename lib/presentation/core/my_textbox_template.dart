@@ -1,14 +1,12 @@
 import 'dart:developer';
 
-import 'package:dynamic_tooltip_plotline/presentation/core/helper.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'package:dynamic_tooltip_plotline/domain/tooltip/my_double.dart';
-import 'package:dynamic_tooltip_plotline/presentation/core/constants.dart';
-import 'package:dynamic_tooltip_plotline/presentation/core/style_elements.dart';
-
 import '../../application/tooltip/data_provider.dart';
+import '../../domain/tooltip/my_double.dart';
+import 'helper.dart';
+import 'style_elements.dart';
 
 enum KeyboardType {
   alphabet,
@@ -21,11 +19,13 @@ class MyTextboxTemplate extends StatefulWidget {
   ///ID is used to get the key for TooltipParams
   final String id;
   final void Function(String)? onSubmit;
+  final bool isUrl;
   const MyTextboxTemplate({
     Key? key,
     required this.type,
     required this.id,
     this.onSubmit,
+    this.isUrl = false,
   }) : super(key: key);
 
   @override
@@ -49,10 +49,10 @@ class _MyTextboxTemplateState extends State<MyTextboxTemplate> {
   }
 
   void initialiseVariables() {
-    log('Params: ${prov.params}');
+    // log('Params: ${prov.params}');
 
     f = FocusNode(debugLabel: widget.id);
-    Object? j = prov.getValFromParams(widget.id);
+    Object? j = prov.getValFromParams(widget.id, isUrl: widget.isUrl);
     ctrl = TextEditingController(text: j == null ? '' : j.toString());
   }
 
