@@ -44,7 +44,7 @@ class _PreviewTooltipPageState extends State<PreviewTooltipPage> {
         prov.showTooltipForKey(k);
 
         ///This allows us to get dynamic height of the tooltip
-        Future.delayed(const Duration(milliseconds: 12)).then((value) {
+        Future.delayed(const Duration(milliseconds: 20)).then((value) {
           prov.setRuntimeHeight(prov.getCurrentConstraints().height);
         });
       });
