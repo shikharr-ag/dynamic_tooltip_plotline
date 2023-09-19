@@ -11,7 +11,7 @@ class Helper {
   }
 
   static String getJsonKeyFromHeadline(String headline) {
-    log('Headline: $headline');
+    // log('Headline: $headline');
     return tooltipParamsMap[headline]!;
   }
 

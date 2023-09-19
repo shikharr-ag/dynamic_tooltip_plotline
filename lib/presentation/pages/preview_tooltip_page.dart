@@ -1,16 +1,16 @@
 import 'dart:developer';
 
-import '../../application/tooltip/preview_page_provider.dart';
-import '../core/route_navigator.dart';
-import '../core/style_elements.dart';
-import 'design_tooltip_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:provider/provider.dart';
 
 import '../../application/tooltip/data_provider.dart';
+import '../../application/tooltip/preview_page_provider.dart';
 import '../core/constants.dart';
 import '../core/preview_tooltip_page_helpers.dart';
+import '../core/route_navigator.dart';
+import '../core/style_elements.dart';
+import 'design_tooltip_page.dart';
 
 final Map<int, List<String>> indexAndButtons = {
   0: [buttons[0], buttons[1]],
@@ -90,8 +90,8 @@ class _PreviewTooltipPageState extends State<PreviewTooltipPage> {
               var totalWidgetWidth = prov.getPaddedWidth();
 
               return Padding(
-                padding: EdgeInsets.fromLTRB(horizontalPadding, verticalPadding,
-                    horizontalPadding, verticalPadding),
+                padding: EdgeInsets.fromLTRB(
+                    horizontalPadding, 0, horizontalPadding, verticalPadding),
                 child: Column(
                   children: [
                     ConstrainedBox(

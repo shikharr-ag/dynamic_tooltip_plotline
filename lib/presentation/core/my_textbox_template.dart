@@ -42,9 +42,12 @@ class _MyTextboxTemplateState extends State<MyTextboxTemplate> {
   bool isEmpty = true;
 
   void addKVToState() {
-    if (ctrl.text.isNotEmpty) {
-      prov.add(Helper.getJsonKeyFromHeadline(widget.id), ctrl.text,
-          castToDouble: widget.type == KeyboardType.numeral ? true : false);
+    if (widget.type == KeyboardType.alphabet) {
+    } else {
+      if (ctrl.text.isNotEmpty) {
+        prov.add(Helper.getJsonKeyFromHeadline(widget.id), ctrl.text,
+            castToDouble: widget.type == KeyboardType.numeral ? true : false);
+      }
     }
   }
 

@@ -274,6 +274,7 @@ class _BackgroundStyleBoxState extends State<BackgroundStyleBox>
       // color: Colors.white,
       decoration: defaultContainerDecoration,
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Expanded(
             child: Container(

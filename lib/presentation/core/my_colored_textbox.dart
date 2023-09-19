@@ -93,6 +93,7 @@ class _MyColoredTextboxState extends State<MyColoredTextbox> {
         // color: Colors.white,
         decoration: defaultContainerDecoration,
         child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Expanded(
               child: Container(

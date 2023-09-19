@@ -1,9 +1,8 @@
 import 'dart:developer';
 
-import 'package:dynamic_tooltip_plotline/application/tooltip/onboarding_page_provider.dart';
-import 'package:dynamic_tooltip_plotline/presentation/core/route_navigator.dart';
-import 'package:dynamic_tooltip_plotline/presentation/pages/design_tooltip_page.dart';
-import 'package:flutter/gestures.dart';
+import '../../application/tooltip/onboarding_page_provider.dart';
+import '../core/route_navigator.dart';
+import 'design_tooltip_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

@@ -1,14 +1,13 @@
 import 'dart:developer';
 
-import 'package:dynamic_tooltip_plotline/application/tooltip/design_page_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:provider/provider.dart';
 
 import '../../application/tooltip/data_provider.dart';
+import '../../application/tooltip/design_page_provider.dart';
 import '../../domain/core/failures.dart';
-import '../../infrastructure/tooltip/shared_preferences_repository.dart';
 import '../core/build_helper_widgets.dart';
 import '../core/constants.dart';
 import '../core/helper.dart';
@@ -25,16 +24,25 @@ class _DesignTooltipPageState extends State<DesignTooltipPage> {
   late GlobalKey<FormState> formKey;
   late final DataProvider prov;
 
-  @override
-  void dispose() {
-    prov.removeListener(() {});
-    super.dispose();
-  }
-
   void initialiseVariables() {
     prov = Provider.of<DataProvider>(context, listen: false);
     formKey = prov.formKey;
     prov.checkHasOldData();
+  }
+
+  void checkAndShowErrors() {
+    ValueFailure f = prov.failure;
+    if (f != const ValueFailure.none()) {
+      ScaffoldMessenger.of(context).showSnackBar(buildMySnackBar(
+        Helper.getErrorMessage(f),
+      ));
+    }
+  }
+
+  @override
+  void dispose() {
+    prov.removeListener(checkAndShowErrors);
+    super.dispose();
   }
 
   @override
@@ -42,16 +50,7 @@ class _DesignTooltipPageState extends State<DesignTooltipPage> {
     FlutterNativeSplash.remove();
     super.initState();
     initialiseVariables();
-    SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
-      prov.addListener(() {
-        ValueFailure f = prov.failure;
-        if (f != const ValueFailure.none()) {
-          ScaffoldMessenger.of(context).showSnackBar(buildMySnackBar(
-            Helper.getErrorMessage(f),
-          ));
-        }
-      });
-    });
+    prov.addListener(checkAndShowErrors);
   }
 
   @override
@@ -78,7 +77,7 @@ class _DesignTooltipPageState extends State<DesignTooltipPage> {
                     (topPadding + bottomPadding);
                 var leftAndRightPadding = dprov.getHorizontalPadding();
                 var listViewWidth = dprov.getListViewWidth();
-                log('Bottom padding: $bottomPadding');
+                // log('Bottom padding: $bottomPadding');
                 return dprov.isLoading
                     ? buildLoader()
                     : Padding(
