@@ -80,5 +80,5 @@ Once you click on the "Render Tooltip" button, you are taken to a new screen whe
 ## 4. Advanced Features
 
 ### Saving Tooltip Configurations
-Show users how they can save their tooltip configurations for future use.
+The app provides you with a out of the box functionality where in your style is automatically stored on your device as soon as you render it and you can get autofill it at the click of a button. ;)
 
